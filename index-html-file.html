@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dumpservice Zuid-Limburg</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --groen: #1a5c2a; --groen-licht: #2d8c42; --geel: #f5c800;
+  --wit: #f9f7f2; --donker: #111; --grijs: #555;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--wit); font-family: 'DM Sans', sans-serif; color: var(--donker); }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--groen); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 24px; height: 56px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: white; letter-spacing: 1px; }
+.nav-logo span { color: var(--geel); }
+.nav-links { display: flex; gap: 6px; }
+.nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 4px; transition: background 0.2s; }
+.nav-links a:hover { background: rgba(255,255,255,0.12); color: white; }
+.nav-cta { background: var(--geel) !important; color: var(--groen) !important; font-weight: 600 !important; }
+
+.urgentie-banner {
+  background: #166534; color: white; text-align: center; padding: 10px 16px;
+  font-size: 14px; font-weight: 600; position: fixed; top: 56px; left: 0; right: 0;
+  z-index: 99; display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.urgentie-banner .pulse { width: 10px; height: 10px; background: var(--geel); border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+#home {
+  background: var(--groen); color: white; padding: 140px 24px 72px;
+  text-align: center; position: relative; overflow: hidden;
+}
+#home::before { content:''; position:absolute; top:-60px; right:-60px; width:280px; height:280px; background:var(--geel); border-radius:50%; opacity:0.1; }
+#home::after { content:''; position:absolute; bottom:-80px; left:-40px; width:220px; height:220px; background:var(--geel); border-radius:50%; opacity:0.07; }
+.hero-badge { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:2px; padding:4px 14px; border-radius:2px; margin-bottom:20px; }
+#home h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(52px,12vw,88px); letter-spacing:2px; line-height:1; margin-bottom:16px; }
+#home h1 span { color:var(--geel); }
+#home p { font-size:17px; opacity:0.88; max-width:480px; margin:0 auto 32px; line-height:1.6; }
+.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn-primary { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; padding:14px 32px; border-radius:6px; text-decoration:none; transition:transform 0.15s; }
+.btn-primary:hover { transform:translateY(-2px); }
+.btn-secondary { background:transparent; color:white; font-size:15px; font-weight:500; padding:14px 24px; border:2px solid rgba(255,255,255,0.4); border-radius:6px; text-decoration:none; }
+
+.stats-bar { background:var(--geel); display:flex; justify-content:center; flex-wrap:wrap; }
+.stat { padding:20px 36px; text-align:center; border-right:1px solid rgba(0,0,0,0.1); }
+.stat:last-child { border-right:none; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--groen); line-height:1; }
+.stat-label { font-size:12px; color:#333; font-weight:500; margin-top:2px; }
+
+section { padding:64px 24px; }
+.container { max-width:760px; margin:0 auto; }
+.sectie-kop { text-align:center; margin-bottom:40px; }
+.sectie-kop .label { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:12px; letter-spacing:2px; padding:3px 12px; border-radius:2px; margin-bottom:12px; }
+.sectie-kop h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(30px,6vw,44px); letter-spacing:1px; color:var(--groen); }
+.sectie-kop p { font-size:15px; color:var(--grijs); max-width:500px; margin:12px auto 0; line-height:1.6; }
+
+#over { background:white; }
+.over-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media(max-width:540px){.over-grid{grid-template-columns:1fr;}}
+.over-card { background:var(--wit); border-radius:10px; padding:24px; border-left:4px solid var(--geel); }
+.over-card .icon { font-size:28px; margin-bottom:10px; }
+.over-card h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--groen); margin-bottom:6px; }
+.over-card p { font-size:14px; color:var(--grijs); line-height:1.6; }
+
+#prijzen { background:var(--wit); }
+.pakketten { display:flex; flex-direction:column; gap:12px; margin-bottom:24px; }
+.pakket { background:white; border:2px solid #e8e8e8; border-radius:10px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; transition:border-color 0.2s,box-shadow 0.2s; }
+.pakket:hover { border-color:var(--groen-licht); box-shadow:0 4px 16px rgba(26,92,42,0.1); }
+.pakket.featured { border-color:var(--groen); background:linear-gradient(135deg,#f0faf2,white); }
+.pakket-icon { font-size:28px; min-width:36px; text-align:center; }
+.pakket-info { flex:1; }
+.pakket-naam { font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--groen); }
+.pakket-omschrijving { font-size:13px; color:var(--grijs); margin-top:2px; line-height:1.4; }
+.pakket-prijs { font-family:'Bebas Nieuwe',sans-serif; font-size:32px; color:var(--groen); white-space:nowrap; }
+.pakket-prijs small { font-family:'DM Sans',sans-serif; font-size:12px; color:var(--grijs); display:block; text-align:right; font-weight:400; margin-top:-4px; }
+.stort-box { background:var(--groen); color:white; border-radius:10px; padding:22px; }
+.stort-box h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--geel); margin-bottom:12px; }
+.stort-rij { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-size:14px; }
+.stort-rij:last-of-type { border-bottom:none; }
+.stort-rij span:last-child { font-weight:600; color:var(--geel); }
+.stort-note { font-size:12px; opacity:0.7; margin-top:12px; line-height:1.5; }
+
+#werkgebied { background:white; }
+.kaart-wrapper { border-radius:12px; overflow:hidden; border:3px solid var(--groen); margin-bottom:20px; }
+.kaart-wrapper iframe { display:block; width:100%; height:340px; border:none; }
+.plaatsen { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.plaats { background:var(--wit); border:1px solid #ddd; border-radius:20px; padding:6px 14px; font-size:13px; color:var(--groen); font-weight:500; }
+
+#faq { background:var(--wit); }
+.faq-lijst { display:flex; flex-direction:column; gap:10px; }
+.faq-item { background:white; border-radius:8px; border:1px solid #e4e4e4; overflow:hidden; }
+.faq-vraag { width:100%; background:none; border:none; padding:18px 20px; text-align:left; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.faq-pijl { font-size:18px; color:var(--groen); transition:transform 0.25s; }
+.faq-item.open .faq-pijl { transform:rotate(180deg); }
+.faq-antwoord { max-height:0; overflow:hidden; transition:max-height 0.3s ease,padding 0.3s; font-size:14px; color:var(--grijs); line-height:1.7; padding:0 20px; }
+.faq-item.open .faq-antwoord { max-height:300px; padding:0 20px 18px; }
+
+#aanvraag { background:var(--groen); color:white; }
+#aanvraag .sectie-kop h2 { color:white; }
+#aanvraag .sectie-kop p { color:rgba(255,255,255,0.75); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:500px){.form-grid{grid-template-columns:1fr;}}
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column:1/-1; }
+.form-group label { font-size:13px; font-weight:600; color:rgba(255,255,255,0.85); }
+.form-group label span { color:var(--geel); }
+.form-control { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); border-radius:7px; padding:12px 14px; font-family:'DM Sans',sans-serif; font-size:14px; color:white; outline:none; transition:border-color 0.2s; width:100%; }
+.form-control::placeholder { color:rgba(255,255,255,0.4); }
+.form-control:focus { border-color:var(--geel); background:rgba(255,255,255,0.15); }
+select.form-control option { background:var(--groen); color:white; }
+textarea.form-control { resize:vertical; min-height:100px; }
+.form-submit { margin-top:20px; text-align:center; }
+.btn-submit { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; padding:16px 48px; border:none; border-radius:7px; cursor:pointer; transition:transform 0.15s; width:100%; max-width:360px; }
+.btn-submit:hover { transform:translateY(-2px); }
+.btn-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.form-succes { display:none; text-align:center; padding:32px; background:rgba(255,255,255,0.1); border-radius:10px; border:2px solid var(--geel); }
+.form-succes .check { font-size:48px; margin-bottom:12px; }
+.form-succes h3 { font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--geel); margin-bottom:8px; }
+.form-succes p { font-size:14px; opacity:0.8; }
+
+footer { background:#0e3b1a; color:rgba(255,255,255,0.6); text-align:center; padding:28px 24px; font-size:13px; line-height:1.8; }
+footer strong { color:white; }
+footer a { color:var(--geel); }
+</style>
+</head>
+<body>
+
+<div class="urgentie-banner">
+  <div class="pulse"></div>
+  <span id="urgentie-tekst">⏳ Laden...</span>
+</div>
+
+<nav>
+  <div class="nav-logo">Dump<span>service</span></div>
+  <div class="nav-links">
+    <a href="#over">Over ons</a>
+    <a href="#prijzen">Prijzen</a>
+    <a href="#werkgebied">Werkgebied</a>
+    <a href="#faq">FAQ</a>
+    <a href="#aanvraag" class="nav-cta">Aanvragen</a>
+  </div>
+</nav>
+
+<section id="home">
+  <div class="hero-badge" id="hero-datum">📅 LADEN...</div>
+  <h1>Afval<span>ophaal</span>dag</h1>
+  <p>Wij komen het ophalen in <strong>regio Zuid-Limburg</strong> — elke zaterdag. Schrijf je in en wij regelen de rest.</p>
+  <div class="hero-btns">
+    <a href="#aanvraag" class="btn-primary">Aanvraag Indienen</a>
+    <a href="#prijzen" class="btn-secondary">Bekijk Prijzen</a>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="stat-datum">—</div><div class="stat-label">Ophaaldag</div></div>
+  <div class="stat"><div class="stat-num">Regio ZL</div><div class="stat-label">Werkgebied</div></div>
+  <div class="stat"><div class="stat-num">€45</div><div class="stat-label">Vanaf</div></div>
+  <div class="stat"><div class="stat-num" id="stat-plekken">—</div><div class="stat-label">Plekken vrij</div></div>
+</div>
+
+<section id="over">
+  <div class="container">
+    <div class="sectie-kop">
+      <div class="label">OVER ONS</div>
+      <h2>Geen gedoe, gewoon weg</h2>
+      <p>Wij zijn een lokaal bedrijf uit Zuid-Limburg en zorgen dat jouw afval snel, netjes en verantwoord wordt afgevoerd.</p>
+    </div>
+    <div class="over-grid">
+      <div class="over-card"><div class="icon">🚛</div><h3>Wij komen naar jou</h3><p>Geen gedoe met aanhanger of rijbewijs BE. Zet je spullen klaar en wij laden alles in.</p></div>
+      <div class="over-card"><div class="icon">♻️</div><h3>Verantwoorde verwerking</h3><p>Al het afval wordt gescheiden aangeboden bij erkende verwerkers in de regio.</p></div>
+      <div class="over-card"><div class="icon">📍</div><h3>100% lokaal</h3><p>We kennen de regio, rijden efficiënte routes en zijn er snel bij in heel Zuid-Limburg.</p></div>
+      <div class="over-card"><div class="icon">💬</div><h3>Eerlijk & transparant</h3><p>Servicetarief vooraf duidelijk, stortkosten op basis van inschatting volume — geen verrassingen.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="prijzen">
+  <div class="container">
+    <div class="sectie-kop">
+      <div class="label">TARIEVEN</div>
+      <h2>Eerlijke Prijzen</h2>
+      <p>Servicetarief is vast per pakket. Stortkosten worden vooraf betaald op basis van een inschatting van het volume.</p>
+    </div>
+    <div class="pakketten">
+      <div class="pakket">
+        <div class="pakket-icon">🚗</div>
+        <div class="pakket-info"><div class="pakket-naam">Klein</div><div class="pakket-omschrijving">Tot 1 m³ — Een paar zakken of kleine meubels</div></div>
+        <div class="pakket-prijs">€45<small>service</small></div>
+      </div>
+      <div class="pakket featured">
+        <div class="pakket-icon">🚐</div>
+        <div class="pakket-info"><div class="pakket-naam">Middel</div><div class="pakket-omschrijving">1 – 3 m³ — Bankstel, kasten of aanhanger vol</div></div>
+        <div class="pakket-prijs">€75<small>service</small></div>
+      </div>
+      <div class="pakket">
+        <div class="pakket-icon">🚛</div>
+        <div class="pakket-info"><div class="pakket-naam">Groot</div><div class="pakket-omschrijving">3 – 6 m³ — Bestelwagen vol of complete inboedel</div></div>
+        <div class="pakket-prijs">€120<small>service</small></div>
+      </div>
+    </div>
+    <div class="stort-box">
+      <h3>🏭 Stortkosten worden apart berekend</h3>
+      <div class="stort-rij"><span>Grofvuil / meubels / gemengd</span><span>RD4-tarief + 10%</span></div>
+      <div class="stort-rij"><span>Bouwafval / puin / tegels</span><span>Op aanvraag</span></div>
+      <div class="stort-rij"><span>Elektronica / gevaarlijk afval</span><span>Op aanvraag</span></div>
+      <p class="stort-note">Stortkosten worden vooraf betaald op basis van een inschatting van het volume.</p>
+    </div>
+  </div>
+</section>
+
+<section id="werkgebied">
+  <div class="container">
+    <div class="sectie-kop"><div class="label">WERKGEBIED</div><h2>Regio Zuid-Limburg</h2><p>Wij rijden door heel Zuid-Limburg.</p></div>
+    <div class="kaart-wrapper">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d81763!2d5.9!3d50.88!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1snl!2snl!4v1700000000000!5m2!1snl!2snl" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <div class="plaatsen">
+      <span class="plaats">📍 Heerlen</span><span class="plaats">📍 Maastricht</span><span class="plaats">📍 Sittard</span>
+      <span class="plaats">📍 Geleen</span><span class="plaats">📍 Kerkrade</span><span class="plaats">📍 Brunssum</span>
+      <span class="plaats">📍 Landgraaf</span><span class="plaats">📍 Valkenburg</span><span class="plaats">📍 Beek</span>
+      <span class="plaats">📍 Gulpen</span><span class="plaats">📍 Vaals</span><span class="plaats">📍 En omgeving</span>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <div class="sectie-kop"><div class="label">FAQ</div><h2>Veelgestelde Vragen</h2></div>
+    <div class="faq-lijst">
+      <div class="faq-item"><button class="faq-vraag">Hoe weet ik welk pakket ik nodig heb? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Schat het volume zo goed mogelijk in. Een bankstel + een paar zakken is ongeveer 2 m³ (Middel). Twijfel je? Stuur vooraf een foto en we denken met je mee.</div></div>
+      <div class="faq-item"><button class="faq-vraag">Wat moet ik zelf doen? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Alleen je spullen klaarleggen bij de voordeur, oprit of in de tuin. Wij laden zelf in en rijden alles weg.</div></div>
+      <div class="faq-item"><button class="faq-vraag">Wat nemen jullie NIET mee? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Geen asbest, chemisch afval (verf, olie, accu's), gasflessen of kadavers.</div></div>
+      <div class="faq-item"><button class="faq-vraag">Hoe worden de stortkosten berekend? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Stortkosten worden vooraf betaald op basis van een inschatting van het volume. We hanteren het RD4-tarief + 10%.</div></div>
+      <div class="faq-item"><button class="faq-vraag">Hoe betaal ik? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Betaling kan contant of via betaalverzoek (Tikkie / bank). Het servicetarief en de geschatte stortkosten worden vooraf betaald.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="aanvraag">
+  <div class="container">
+    <div class="sectie-kop">
+      <div class="label">AANVRAGEN</div>
+      <h2>Schrijf Je In</h2>
+      <p>Vul het formulier in en we nemen zo snel mogelijk contact met je op ter bevestiging.</p>
+    </div>
+    <div id="form-wrapper">
+      <div class="form-grid">
+        <div class="form-group"><label>Voornaam <span>*</span></label><input type="text" id="voornaam" class="form-control" placeholder="Jan"></div>
+        <div class="form-group"><label>Achternaam <span>*</span></label><input type="text" id="achternaam" class="form-control" placeholder="Janssen"></div>
+        <div class="form-group"><label>E-mailadres <span>*</span></label><input type="email" id="email" class="form-control" placeholder="jan@email.nl"></div>
+        <div class="form-group"><label>Telefoonnummer</label><input type="tel" id="telefoon" class="form-control" placeholder="06 12345678"></div>
+        <div class="form-group full"><label>Straat + huisnummer <span>*</span></label><input type="text" id="straat" class="form-control" placeholder="Hoofdstraat 12"></div>
+        <div class="form-group"><label>Postcode <span>*</span></label><input type="text" id="postcode" class="form-control" placeholder="6411 AB"></div>
+        <div class="form-group"><label>Plaats <span>*</span></label><input type="text" id="plaats" class="form-control" placeholder="Heerlen"></div>
+        <div class="form-group full"><label>Welke ruimte(s) moeten worden leeggemaakt? <span>*</span></label><input type="text" id="ruimte" class="form-control" placeholder="bijv. zolder, garage, woonkamer..."></div>
+        <div class="form-group">
+          <label>Verwacht volume <span>*</span></label>
+          <select id="volume" class="form-control">
+            <option value="">— Kies pakket —</option>
+            <option value="klein">Klein — tot 1 m³ (€45)</option>
+            <option value="middel">Middel — 1 tot 3 m³ (€75)</option>
+            <option value="groot">Groot — 3 tot 6 m³ (€120)</option>
+            <option value="onbekend">Weet ik niet zeker</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Soort afval</label>
+          <select id="soort" class="form-control">
+            <option value="">— Kies type —</option>
+            <option>Grofvuil / meubels</option>
+            <option>Bouwafval / puin</option>
+            <option>Gemengd</option>
+            <option>Elektronica</option>
+            <option>Anders / combinatie</option>
+          </select>
+        </div>
+        <div class="form-group full"><label>Bijzonderheden</label><textarea id="opmerking" class="form-control" placeholder="Bijv. moeilijk bereikbaar, trap aanwezig..."></textarea></div>
+      </div>
+      <div class="form-submit">
+        <button class="btn-submit" id="submit-btn" onclick="verstuurFormulier()">Aanvraag Versturen ➜</button>
+      </div>
+    </div>
+    <div class="form-succes" id="succes-bericht">
+      <div class="check">✅</div>
+      <h3>Aanvraag Ontvangen!</h3>
+      <p>Bedankt! We nemen zo snel mogelijk contact op ter bevestiging van je plek.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>Dumpservice Zuid-Limburg</strong><br>
+  Regio Zuid-Limburg · Elke zaterdag<br>
+  <a href="mailto:info@dumpservice.nl">info@dumpservice.nl</a>
+</footer>
+
+<script>
+const VOLUME_M3 = { klein: 0.75, middel: 2, groot: 4.5, onbekend: 2 };
+
+function volgendeSaterdag() {
+  const nu = new Date();
+  const dag = nu.getDay();
+  const dagenTot = dag === 6 ? 7 : (6 - dag);
+  const zat = new Date(nu);
+  zat.setDate(nu.getDate() + dagenTot);
+  return zat;
+}
+
+function formatDatum(d) {
+  return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' });
+}
+
+const zat = volgendeSaterdag();
+const datumTekst = formatDatum(zat);
+document.getElementById('hero-datum').textContent = '📅 VOLGENDE OPHAALDAG: ' + datumTekst.toUpperCase();
+document.getElementById('stat-datum').textContent = datumTekst;
+
+async function updateUrgentie() {
+  try {
+    const res = await fetch('/api/capaciteit');
+    const data = await res.json();
+    const plekken = data.plekken ?? 0;
+    const el = document.getElementById('urgentie-tekst');
+    const stat = document.getElementById('stat-plekken');
+    if (plekken === 0) {
+      el.textContent = '🔴 VOL — Geen plekken meer beschikbaar voor ' + datumTekst;
+      el.parentElement.style.background = '#7f1d1d';
+    } else if (plekken <= 3) {
+      el.textContent = `🔥 Nog maar ${plekken} plek${plekken === 1 ? '' : 'ken'} vrij voor ${datumTekst} — snel zijn!`;
+      el.parentElement.style.background = '#b91c1c';
+    } else {
+      el.textContent = `✅ Nog ${plekken} plekken beschikbaar voor ${datumTekst}`;
+    }
+    if (stat) stat.textContent = plekken + ' vrij';
+  } catch {
+    document.getElementById('urgentie-tekst').textContent = `📅 Volgende ophaaldag: ${datumTekst}`;
+  }
+}
+updateUrgentie();
+
+async function verstuurFormulier() {
+  const vereist = ['voornaam', 'achternaam', 'email', 'straat', 'postcode', 'plaats', 'ruimte', 'volume'];
+  let geldig = true;
+  vereist.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) { el.style.borderColor = '#ff6b6b'; geldig = false; }
+    else el.style.borderColor = '';
+  });
+  if (!geldig) { alert('Vul alle verplichte velden in.'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Versturen...';
+
+  const data = {
+    voornaam: document.getElementById('voornaam').value.trim(),
+    achternaam: document.getElementById('achternaam').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    telefoon: document.getElementById('telefoon').value.trim(),
+    straat: document.getElementById('straat').value.trim(),
+    postcode: document.getElementById('postcode').value.trim(),
+    plaats: document.getElementById('plaats').value.trim(),
+    ruimte: document.getElementById('ruimte').value.trim(),
+    volume: document.getElementById('volume').value,
+    soort: document.getElementById('soort').value,
+    opmerking: document.getElementById('opmerking').value.trim(),
+    datum: datumTekst,
+  };
+
+  try {
+    const res = await fetch('/api/aanvraag', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Serverfout');
+    document.getElementById('form-wrapper').style.display = 'none';
+    document.getElementById('succes-bericht').style.display = 'block';
+    document.getElementById('succes-bericht').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    updateUrgentie();
+  } catch {
+    alert('Er ging iets mis. Probeer het opnieuw.');
+    btn.disabled = false;
+    btn.textContent = 'Aanvraag Versturen ➜';
+  }
+}
+
+document.querySelectorAll('.faq-vraag').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
