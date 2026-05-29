@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Dumpservice</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --groen:#1a5c2a; --geel:#f5c800; --wit:#f9f7f2; --grijs:#555; }
+body { background:var(--wit); font-family:'DM Sans',sans-serif; color:#111; min-height:100vh; }
+
+/* LOGIN */
+#login-scherm {
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; background:var(--groen);
+}
+.login-box { background:white; border-radius:14px; padding:40px; max-width:360px; width:90%; text-align:center; }
+.login-box h2 { font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--groen); margin-bottom:8px; }
+.login-box p { font-size:13px; color:var(--grijs); margin-bottom:24px; }
+.login-box input { width:100%; padding:12px 14px; border:2px solid #ddd; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:15px; outline:none; margin-bottom:14px; }
+.login-box input:focus { border-color:var(--groen); }
+.login-box button { width:100%; background:var(--groen); color:white; font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; padding:14px; border:none; border-radius:7px; cursor:pointer; }
+.login-fout { color:#b91c1c; font-size:13px; margin-top:10px; display:none; }
+
+/* ADMIN */
+#admin-scherm { display:none; }
+.admin-nav { background:var(--groen); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; position:sticky; top:0; z-index:10; }
+.admin-nav h1 { font-family:'Bebas Neue',sans-serif; font-size:22px; color:white; letter-spacing:1px; }
+.admin-nav h1 span { color:var(--geel); }
+.admin-nav-rechts { display:flex; gap:10px; flex-wrap:wrap; }
+.admin-btn { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:1px; padding:8px 16px; border:none; border-radius:5px; cursor:pointer; }
+.admin-btn.rood { background:#b91c1c; color:white; }
+.admin-btn.wit { background:white; color:var(--groen); }
+
+.admin-content { max-width:1100px; margin:0 auto; padding:32px 20px; }
+
+.admin-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:32px; }
+.admin-stat { background:white; border-radius:10px; padding:20px; border-left:4px solid var(--geel); }
+.admin-stat .num { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--groen); line-height:1; }
+.admin-stat .lbl { font-size:12px; color:var(--grijs); font-weight:500; margin-top:4px; }
+
+.ai-box { background:var(--groen); color:white; border-radius:12px; padding:24px; margin-bottom:32px; }
+.ai-box-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.ai-box-header h2 { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px; color:var(--geel); }
+.ai-output { font-size:14px; line-height:1.8; opacity:0.92; white-space:pre-wrap; }
+.ai-loading { display:flex; align-items:center; gap:10px; font-size:14px; opacity:0.7; }
+.spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:var(--geel); border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.tabel-kop { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
+.tabel-kop h2 { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--groen); }
+.aanvraag-kaart { background:white; border:1px solid #e4e4e4; border-radius:10px; padding:18px 20px; margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; }
+@media(max-width:500px){.aanvraag-kaart{grid-template-columns:1fr;}}
+.aanvraag-kaart .veld { font-size:13px; }
+.aanvraag-kaart .veld strong { color:var(--groen); display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+.badge-volume { display:inline-block; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+.badge-klein { background:#dcfce7; color:#166534; }
+.badge-middel { background:#fef9c3; color:#854d0e; }
+.badge-groot { background:#fee2e2; color:#991b1b; }
+.badge-onbekend { background:#f3f4f6; color:#374151; }
+.leeg-state { text-align:center; padding:48px; color:var(--grijs); font-size:15px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-scherm">
+  <div class="login-box">
+    <h2>⚙️ Admin Panel</h2>
+    <p>Dumpservice Zuid-Limburg — Beheer</p>
+    <input type="password" id="ww-input" placeholder="Wachtwoord" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">Inloggen</button>
+    <div class="login-fout" id="login-fout">Onjuist wachtwoord</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-scherm">
+  <div class="admin-nav">
+    <h1>Dump<span>service</span> — Admin</h1>
+    <div class="admin-nav-rechts">
+      <button class="admin-btn wit" onclick="laadData()">🔄 Vernieuwen</button>
+      <button class="admin-btn" onclick="runAI()">🤖 AI Analyse</button>
+      <button class="admin-btn wit" onclick="exportCSV()">⬇ CSV</button>
+      <button class="admin-btn rood" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="admin-stats">
+      <div class="admin-stat"><div class="num" id="a-totaal">—</div><div class="lbl">Totaal aanvragen</div></div>
+      <div class="admin-stat"><div class="num" id="a-m3">—</div><div class="lbl">Totaal m³ inschatting</div></div>
+      <div class="admin-stat"><div class="num" id="a-omzet">—</div><div class="lbl">Verwachte omzet</div></div>
+      <div class="admin-stat"><div class="num" id="a-vrij">—</div><div class="lbl">Plekken vrij</div></div>
+    </div>
+
+    <div class="ai-box">
+      <div class="ai-box-header">
+        <h2>🤖 AI Routeplanning & Voertuigadvies</h2>
+        <button class="admin-btn" onclick="runAI()" style="font-size:13px;">Herbereken</button>
+      </div>
+      <div id="ai-output">
+        <div class="ai-loading"><div class="spinner"></div> Klik op "AI Analyse" om de planning te genereren...</div>
+      </div>
+    </div>
+
+    <div class="tabel-kop">
+      <h2>📋 Alle Aanvragen</h2>
+    </div>
+    <div id="aanvragen-lijst"><div class="leeg-state">Laden...</div></div>
+  </div>
+</div>
+
+<script>
+const VOLUME_M3 = { klein: 0.75, middel: 2, groot: 4.5, onbekend: 2 };
+const PRIJS_SERVICE = { klein: 45, middel: 75, groot: 120, onbekend: 75 };
+const MAX_M3 = 24;
+const AUTOP_PRIJZEN = {
+  'Citroën Berlingo (4m³)': { prijs: 69, capaciteit: 4 },
+  'Renault Trafic (8m³)': { prijs: 99, capaciteit: 8 },
+  'Ford Transit (12m³)': { prijs: 129, capaciteit: 12 },
+  'Mercedes Sprinter (14m³)': { prijs: 149, capaciteit: 14 },
+};
+
+let adminWW = '';
+let alleAanvragen = [];
+
+function volgendeSaterdag() {
+  const nu = new Date();
+  const dag = nu.getDay();
+  const dagenTot = dag === 6 ? 7 : (6 - dag);
+  const zat = new Date(nu);
+  zat.setDate(nu.getDate() + dagenTot);
+  return zat.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' });
+}
+const datumTekst = volgendeSaterdag();
+
+function login() {
+  const ww = document.getElementById('ww-input').value;
+  adminWW = ww;
+  document.getElementById('login-scherm').style.display = 'none';
+  document.getElementById('admin-scherm').style.display = 'block';
+  laadData();
+}
+
+function uitloggen() {
+  adminWW = '';
+  document.getElementById('admin-scherm').style.display = 'none';
+  document.getElementById('login-scherm').style.display = 'flex';
+  document.getElementById('ww-input').value = '';
+}
+
+async function laadData() {
+  try {
+    const res = await fetch('/api/aanvragen', {
+      headers: { 'x-admin-password': adminWW }
+    });
+    if (res.status === 401) {
+      document.getElementById('login-fout').style.display = 'block';
+      uitloggen();
+      return;
+    }
+    const data = await res.json();
+    alleAanvragen = data.aanvragen || [];
+    renderStats();
+    renderAanvragen();
+  } catch {
+    document.getElementById('aanvragen-lijst').innerHTML = '<div class="leeg-state">❌ Kon aanvragen niet laden.</div>';
+  }
+}
+
+function renderStats() {
+  const totaalM3 = alleAanvragen.reduce((s,a) => s + (VOLUME_M3[a.volume]||2), 0);
+  const omzet = alleAanvragen.reduce((s,a) => s + (PRIJS_SERVICE[a.volume]||75), 0);
+  const plekken = Math.max(0, Math.round((MAX_M3 - totaalM3) / 2));
+  document.getElementById('a-totaal').textContent = alleAanvragen.length;
+  document.getElementById('a-m3').textContent = totaalM3.toFixed(1) + ' m³';
+  document.getElementById('a-omzet').textContent = '€' + omzet;
+  document.getElementById('a-vrij').textContent = plekken;
+}
+
+function renderAanvragen() {
+  const lijst = document.getElementById('aanvragen-lijst');
+  if (!alleAanvragen.length) {
+    lijst.innerHTML = '<div class="leeg-state">📭 Nog geen aanvragen ontvangen.</div>';
+    return;
+  }
+  lijst.innerHTML = alleAanvragen.map(a => `
+    <div class="aanvraag-kaart">
+      <div class="veld"><strong>Naam</strong>${a.voornaam} ${a.achternaam}</div>
+      <div class="veld"><strong>Telefoon</strong>${a.telefoon || '—'}</div>
+      <div class="veld"><strong>E-mail</strong>${a.email}</div>
+      <div class="veld"><strong>Adres</strong>${a.straat}, ${a.postcode} ${a.plaats}</div>
+      <div class="veld"><strong>Ruimte</strong>${a.ruimte}</div>
+      <div class="veld"><strong>Volume</strong><span class="badge-volume badge-${a.volume}">${a.volume || '?'}</span></div>
+      <div class="veld"><strong>Soort afval</strong>${a.soort || '—'}</div>
+      <div class="veld"><strong>Ingediend</strong>${new Date(a.timestamp).toLocaleString('nl-NL')}</div>
+      ${a.opmerking ? `<div class="veld" style="grid-column:1/-1"><strong>Opmerkingen</strong>${a.opmerking}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+async function runAI() {
+  const output = document.getElementById('ai-output');
+  output.innerHTML = '<div class="ai-loading"><div class="spinner"></div> AI analyseert aanvragen en plant routes...</div>';
+
+  if (!alleAanvragen.length) {
+    output.innerHTML = '<div class="ai-output">📭 Nog geen aanvragen — voeg eerst aanvragen toe.</div>';
+    return;
+  }
+
+  const autopInfo = Object.entries(AUTOP_PRIJZEN)
+    .map(([n,i]) => `${n}: capaciteit ${i.capaciteit}m³, dagprijs €${i.prijs}`).join('\n');
+
+  const aanvraagInfo = alleAanvragen.map((a,i) =>
+    `${i+1}. ${a.voornaam} ${a.achternaam} | ${a.straat}, ${a.postcode} ${a.plaats} | Volume: ${a.volume} (~${VOLUME_M3[a.volume]||2}m³) | Soort: ${a.soort||'onbekend'} | Ruimte: ${a.ruimte}`
+  ).join('\n');
+
+  const prompt = `Je bent een logistiek planner voor Dumpservice Zuid-Limburg.
+We hebben 2 personen die elk een bestelbus huren bij Autop NL voor ophaaldag ${datumTekst}.
+
+BESCHIKBARE AUTOP VOERTUIGEN:
+${autopInfo}
+
+INGEDIENDE AANVRAGEN:
+${aanvraagInfo}
+
+Maak een complete dagplanning:
+1. VOERTUIGADVIES: Welk voertuig moet persoon 1 en persoon 2 huren? Motiveer op basis van totaal volume en kosten.
+2. ROUTEPLANNING: Verdeel de adressen slim over 2 routes (cluster per wijk/regio). Geef een logische volgorde per route.
+3. CAPACITEIT: Is alles haalbaar in één dag? Hoeveel m³ per bus?
+4. KOSTEN OVERZICHT: Autop huurkosten + verwachte serviceopbrengst + indicatie stortkosten.
+5. TIPS: Zijn er bijzonderheden of aandachtspunten op basis van de aanvragen?
+
+Antwoord in het Nederlands, gestructureerd met kopjes. Wees concreet en praktisch.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const tekst = data.content?.map(b => b.text||'').join('') || 'Geen antwoord ontvangen.';
+    output.innerHTML = `<div class="ai-output">${tekst.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  } catch (err) {
+    output.innerHTML = `<div class="ai-output">❌ Fout: ${err.message}</div>`;
+  }
+}
+
+function exportCSV() {
+  if (!alleAanvragen.length) { alert('Geen aanvragen om te exporteren.'); return; }
+  const headers = ['Voornaam','Achternaam','Email','Telefoon','Straat','Postcode','Plaats','Ruimte','Volume','Soort','Opmerking','Ingediend'];
+  const rijen = alleAanvragen.map(a => [
+    a.voornaam,a.achternaam,a.email,a.telefoon||'',a.straat,a.postcode,a.plaats,
+    a.ruimte,a.volume,a.soort||'',a.opmerking||'',new Date(a.timestamp).toLocaleString('nl-NL')
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rijen].join('\n');
+  const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `dumpservice-${datumTekst.replace(/ /g,'-')}.csv`;
+  a.click();
+}
+</script>
+</body>
+</html>
