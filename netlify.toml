@@ -1,0 +1,31 @@
+[build]
+publish = "."
+functions = "netlify/functions"
+
+[functions]
+node_bundler = "esbuild"
+
+# Background functions (-background.js suffix) krijgen automatisch
+# 15 min timeout op alle Netlify plans (ook free).
+# Sync functions op free = 10 sec max.
+
+[functions."mollie-webhook"]
+timeout = 10
+
+[functions."create-payment"]
+timeout = 10
+
+[functions."process-quiz"]
+timeout = 10
+
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+for = "/*.html"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
