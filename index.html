@@ -12,69 +12,108 @@
   --wit: #f9f7f2; --donker: #111; --grijs: #555;
 }
 html { scroll-behavior: smooth; }
-body { background: var(--wit); font-family: 'DM Sans', sans-serif; color: var(--donker); }
+body { background: var(--wit); font-family: 'DM Sans', sans-serif; color: var(--donker); overflow-x: hidden; }
 
+/* ── NAV ── */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   background: var(--groen); display: flex; align-items: center;
   justify-content: space-between; padding: 0 24px; height: 56px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
 .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: white; letter-spacing: 1px; }
 .nav-logo span { color: var(--geel); }
-.nav-links { display: flex; gap: 6px; }
+.nav-links { display: flex; gap: 6px; align-items: center; }
 .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 4px; transition: background 0.2s; }
 .nav-links a:hover { background: rgba(255,255,255,0.12); color: white; }
 .nav-cta { background: var(--geel) !important; color: var(--groen) !important; font-weight: 600 !important; }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; background: none; border: none; }
+.hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; transition: all 0.3s; }
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+.nav-mobile-menu { display: none; position: fixed; top: 56px; left: 0; right: 0; background: var(--groen); flex-direction: column; padding: 16px 24px 24px; gap: 4px; z-index: 199; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-menu a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 16px; font-weight: 500; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.nav-mobile-menu a:last-child { border-bottom: none; background: var(--geel); color: var(--groen); font-weight: 700; text-align: center; padding: 14px; border-radius: 6px; margin-top: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; }
+@media(max-width: 600px) { .nav-links { display: none; } .hamburger { display: flex; } }
 
+/* ── URGENTIE ── */
 .urgentie-banner {
   background: #166534; color: white; text-align: center; padding: 10px 16px;
   font-size: 14px; font-weight: 600; position: fixed; top: 56px; left: 0; right: 0;
-  z-index: 99; display: flex; align-items: center; justify-content: center; gap: 10px;
+  z-index: 198; display: flex; align-items: center; justify-content: center; gap: 10px;
 }
-.urgentie-banner .pulse { width: 10px; height: 10px; background: var(--geel); border-radius: 50%; animation: pulse 1.5s infinite; }
+.urgentie-banner .pulse { width: 10px; height: 10px; background: var(--geel); border-radius: 50%; animation: pulse 1.5s infinite; flex-shrink: 0; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
 
+/* ── HERO ── */
 #home {
-  background: var(--groen); color: white; padding: 140px 24px 72px;
-  text-align: center; position: relative; overflow: hidden;
+  background: var(--groen); color: white; padding: 160px 24px 80px;
+  text-align: center; position: relative; overflow: hidden; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-#home::before { content:''; position:absolute; top:-60px; right:-60px; width:280px; height:280px; background:var(--geel); border-radius:50%; opacity:0.1; }
-#home::after { content:''; position:absolute; bottom:-80px; left:-40px; width:220px; height:220px; background:var(--geel); border-radius:50%; opacity:0.07; }
-.hero-badge { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:2px; padding:4px 14px; border-radius:2px; margin-bottom:20px; }
-#home h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(52px,12vw,88px); letter-spacing:2px; line-height:1; margin-bottom:16px; }
+.hero-parallax-bg {
+  position: absolute; inset: -60px; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(245,200,0,0.15) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 80% at 20% 80%, rgba(45,140,66,0.3) 0%, transparent 60%);
+}
+.hero-circle-1 { position:absolute; top:-80px; right:-80px; width:380px; height:380px; background:var(--geel); border-radius:50%; opacity:0.08; z-index:0; animation: floatCircle 8s ease-in-out infinite; }
+.hero-circle-2 { position:absolute; bottom:-100px; left:-60px; width:300px; height:300px; background:var(--geel); border-radius:50%; opacity:0.06; z-index:0; animation: floatCircle 11s ease-in-out infinite reverse; }
+.hero-circle-3 { position:absolute; top:50%; left:10%; width:120px; height:120px; background:white; border-radius:50%; opacity:0.04; z-index:0; animation: floatCircle 6s ease-in-out infinite 2s; }
+@keyframes floatCircle { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-30px) scale(1.05)} }
+#home > * { position: relative; z-index: 1; }
+.hero-badge { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:2px; padding:4px 14px; border-radius:2px; margin-bottom:20px; animation: badgePop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; }
+@keyframes badgePop { from{opacity:0;transform:scale(0.6) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+#home h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(56px,14vw,96px); letter-spacing:2px; line-height:0.95; margin-bottom:20px; animation: heroTitle 0.8s cubic-bezier(0.22,1,0.36,1) 0.4s both; }
+@keyframes heroTitle { from{opacity:0;transform:translateY(40px) skewY(3deg)} to{opacity:1;transform:translateY(0) skewY(0)} }
 #home h1 span { color:var(--geel); }
-#home p { font-size:17px; opacity:0.88; max-width:480px; margin:0 auto 32px; line-height:1.6; }
-.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-.btn-primary { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; padding:14px 32px; border-radius:6px; text-decoration:none; transition:transform 0.15s; }
-.btn-primary:hover { transform:translateY(-2px); }
-.btn-secondary { background:transparent; color:white; font-size:15px; font-weight:500; padding:14px 24px; border:2px solid rgba(255,255,255,0.4); border-radius:6px; text-decoration:none; }
+#home p { font-size:17px; opacity:0.88; max-width:480px; margin:0 auto 36px; line-height:1.6; animation: heroFade 0.8s ease 0.7s both; }
+@keyframes heroFade { from{opacity:0;transform:translateY(20px)} to{opacity:0.88;transform:translateY(0)} }
+.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; animation: heroFade 0.8s ease 0.9s both; }
+.btn-primary { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; padding:16px 36px; border-radius:6px; text-decoration:none; transition:transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(245,200,0,0.4); }
+.btn-primary:hover { transform:translateY(-4px) scale(1.03); box-shadow: 0 10px 30px rgba(245,200,0,0.5); }
+.btn-secondary { background:transparent; color:white; font-size:15px; font-weight:500; padding:16px 28px; border:2px solid rgba(255,255,255,0.4); border-radius:6px; text-decoration:none; transition: border-color 0.2s, background 0.2s; }
+.btn-secondary:hover { border-color:white; background:rgba(255,255,255,0.08); }
+.scroll-hint { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; opacity:0.5; animation: heroFade 1s ease 1.5s both; }
+.scroll-hint span { font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+.scroll-arrow { width:20px; height:20px; border-right:2px solid white; border-bottom:2px solid white; transform:rotate(45deg); animation: scrollBounce 1.5s ease-in-out infinite; }
+@keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(6px)} }
 
-.stats-bar { background:var(--geel); display:flex; justify-content:center; flex-wrap:wrap; }
+/* ── STATS ── */
+.stats-bar { background:var(--geel); display:flex; justify-content:center; flex-wrap:wrap; position:relative; z-index:2; }
 .stat { padding:20px 36px; text-align:center; border-right:1px solid rgba(0,0,0,0.1); }
 .stat:last-child { border-right:none; }
 .stat-num { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--groen); line-height:1; }
 .stat-label { font-size:12px; color:#333; font-weight:500; margin-top:2px; }
 
-section { padding:64px 24px; }
+/* ── ALGEMEEN ── */
+section { padding:72px 24px; }
 .container { max-width:760px; margin:0 auto; }
-.sectie-kop { text-align:center; margin-bottom:40px; }
+.sectie-kop { text-align:center; margin-bottom:44px; }
 .sectie-kop .label { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:12px; letter-spacing:2px; padding:3px 12px; border-radius:2px; margin-bottom:12px; }
-.sectie-kop h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(30px,6vw,44px); letter-spacing:1px; color:var(--groen); }
+.sectie-kop h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(30px,6vw,46px); letter-spacing:1px; color:var(--groen); }
 .sectie-kop p { font-size:15px; color:var(--grijs); max-width:500px; margin:12px auto 0; line-height:1.6; }
 
-#over { background:white; }
-.over-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-@media(max-width:540px){.over-grid{grid-template-columns:1fr;}}
-.over-card { background:var(--wit); border-radius:10px; padding:24px; border-left:4px solid var(--geel); }
-.over-card .icon { font-size:28px; margin-bottom:10px; }
-.over-card h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--groen); margin-bottom:6px; }
-.over-card p { font-size:14px; color:var(--grijs); line-height:1.6; }
+/* ── SCROLL ANIMATIES ── */
+.reveal { opacity:0; transform:translateY(50px); transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-left { opacity:0; transform:translateX(-60px); transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.reveal-left.visible { opacity:1; transform:translateX(0); }
+.reveal-right { opacity:0; transform:translateX(60px); transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.reveal-right.visible { opacity:1; transform:translateX(0); }
+.reveal-scale { opacity:0; transform:scale(0.85); transition:opacity 0.6s ease, transform 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+.reveal-scale.visible { opacity:1; transform:scale(1); }
+.delay-1 { transition-delay: 0.1s !important; }
+.delay-2 { transition-delay: 0.2s !important; }
+.delay-3 { transition-delay: 0.3s !important; }
+.delay-4 { transition-delay: 0.4s !important; }
 
+/* ── PRIJZEN ── */
 #prijzen { background:var(--wit); }
 .pakketten { display:flex; flex-direction:column; gap:12px; margin-bottom:24px; }
-.pakket { background:white; border:2px solid #e8e8e8; border-radius:10px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; transition:border-color 0.2s,box-shadow 0.2s; }
-.pakket:hover { border-color:var(--groen-licht); box-shadow:0 4px 16px rgba(26,92,42,0.1); }
+.pakket { background:white; border:2px solid #e8e8e8; border-radius:12px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; transition:border-color 0.3s, box-shadow 0.3s, transform 0.3s; }
+.pakket:hover { border-color:var(--groen-licht); box-shadow:0 8px 28px rgba(26,92,42,0.15); transform:translateX(6px); }
 .pakket.featured { border-color:var(--groen); background:linear-gradient(135deg,#f0faf2,white); }
 .pakket-icon { font-size:28px; min-width:36px; text-align:center; }
 .pakket-info { flex:1; }
@@ -82,52 +121,93 @@ section { padding:64px 24px; }
 .pakket-omschrijving { font-size:13px; color:var(--grijs); margin-top:2px; line-height:1.4; }
 .pakket-prijs { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--groen); white-space:nowrap; }
 .pakket-prijs small { font-family:'DM Sans',sans-serif; font-size:12px; color:var(--grijs); display:block; text-align:right; font-weight:400; margin-top:-4px; }
-.stort-box { background:var(--groen); color:white; border-radius:10px; padding:22px; }
+.stort-box { background:var(--groen); color:white; border-radius:12px; padding:22px; }
 .stort-box h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--geel); margin-bottom:12px; }
 .stort-rij { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-size:14px; }
 .stort-rij:last-of-type { border-bottom:none; }
 .stort-rij span:last-child { font-weight:600; color:var(--geel); }
 .stort-note { font-size:12px; opacity:0.7; margin-top:12px; line-height:1.5; }
 
+/* ── WERKGEBIED ── */
 #werkgebied { background:white; }
-.kaart-wrapper { border-radius:12px; overflow:hidden; border:3px solid var(--groen); margin-bottom:20px; }
+.kaart-wrapper { border-radius:14px; overflow:hidden; border:3px solid var(--groen); margin-bottom:20px; box-shadow: 0 8px 32px rgba(26,92,42,0.15); transition: transform 0.3s, box-shadow 0.3s; }
+.kaart-wrapper:hover { transform: scale(1.01); box-shadow: 0 16px 48px rgba(26,92,42,0.2); }
 .kaart-wrapper iframe { display:block; width:100%; height:340px; border:none; }
 .plaatsen { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
-.plaats { background:var(--wit); border:1px solid #ddd; border-radius:20px; padding:6px 14px; font-size:13px; color:var(--groen); font-weight:500; }
+.plaats { background:var(--wit); border:1px solid #ddd; border-radius:20px; padding:6px 14px; font-size:13px; color:var(--groen); font-weight:500; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; }
+.plaats:hover { background: var(--geel); border-color: var(--geel); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(245,200,0,0.3); }
 
+/* ── FAQ ── */
 #faq { background:var(--wit); }
 .faq-lijst { display:flex; flex-direction:column; gap:10px; }
-.faq-item { background:white; border-radius:8px; border:1px solid #e4e4e4; overflow:hidden; }
-.faq-vraag { width:100%; background:none; border:none; padding:18px 20px; text-align:left; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; }
-.faq-pijl { font-size:18px; color:var(--groen); transition:transform 0.25s; }
+.faq-item { background:white; border-radius:10px; border:1px solid #e4e4e4; overflow:hidden; transition: box-shadow 0.3s; }
+.faq-item:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.faq-vraag { width:100%; background:none; border:none; padding:18px 20px; text-align:left; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; transition: color 0.2s; }
+.faq-item.open .faq-vraag { color: var(--groen); }
+.faq-pijl { font-size:18px; color:var(--groen); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
 .faq-item.open .faq-pijl { transform:rotate(180deg); }
-.faq-antwoord { max-height:0; overflow:hidden; transition:max-height 0.3s ease,padding 0.3s; font-size:14px; color:var(--grijs); line-height:1.7; padding:0 20px; }
+.faq-antwoord { max-height:0; overflow:hidden; transition:max-height 0.4s ease,padding 0.3s; font-size:14px; color:var(--grijs); line-height:1.7; padding:0 20px; }
 .faq-item.open .faq-antwoord { max-height:300px; padding:0 20px 18px; }
 
-#aanvraag { background:var(--groen); color:white; }
+/* ── AANVRAAG ── */
+#aanvraag { background:var(--groen); color:white; position:relative; overflow:hidden; }
+#aanvraag::before { content:''; position:absolute; top:-120px; right:-120px; width:400px; height:400px; background:rgba(245,200,0,0.07); border-radius:50%; pointer-events:none; }
+#aanvraag::after { content:''; position:absolute; bottom:-80px; left:-80px; width:280px; height:280px; background:rgba(255,255,255,0.04); border-radius:50%; pointer-events:none; }
 #aanvraag .sectie-kop h2 { color:white; }
 #aanvraag .sectie-kop p { color:rgba(255,255,255,0.75); }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; position:relative; z-index:1; }
 @media(max-width:500px){.form-grid{grid-template-columns:1fr;}}
 .form-group { display:flex; flex-direction:column; gap:6px; }
 .form-group.full { grid-column:1/-1; }
 .form-group label { font-size:13px; font-weight:600; color:rgba(255,255,255,0.85); }
 .form-group label span { color:var(--geel); }
-.form-control { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); border-radius:7px; padding:12px 14px; font-family:'DM Sans',sans-serif; font-size:14px; color:white; outline:none; transition:border-color 0.2s; width:100%; }
+.form-control { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); border-radius:7px; padding:12px 14px; font-family:'DM Sans',sans-serif; font-size:14px; color:white; outline:none; transition:border-color 0.2s, background 0.2s, transform 0.2s; width:100%; }
 .form-control::placeholder { color:rgba(255,255,255,0.4); }
-.form-control:focus { border-color:var(--geel); background:rgba(255,255,255,0.15); }
+.form-control:focus { border-color:var(--geel); background:rgba(255,255,255,0.15); transform: scale(1.01); }
 select.form-control option { background:var(--groen); color:white; }
 textarea.form-control { resize:vertical; min-height:100px; }
-.form-submit { margin-top:20px; text-align:center; }
-.btn-submit { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; padding:16px 48px; border:none; border-radius:7px; cursor:pointer; transition:transform 0.15s; width:100%; max-width:360px; }
-.btn-submit:hover { transform:translateY(-2px); }
-.btn-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-.form-succes { display:none; text-align:center; padding:32px; background:rgba(255,255,255,0.1); border-radius:10px; border:2px solid var(--geel); }
-.form-succes .check { font-size:48px; margin-bottom:12px; }
-.form-succes h3 { font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--geel); margin-bottom:8px; }
+.form-submit { margin-top:20px; text-align:center; position:relative; z-index:1; }
+.btn-submit { background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; padding:16px 48px; border:none; border-radius:7px; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; width:100%; max-width:360px; box-shadow: 0 4px 20px rgba(245,200,0,0.35); }
+.btn-submit:hover { transform:translateY(-4px) scale(1.02); box-shadow: 0 12px 32px rgba(245,200,0,0.5); }
+.btn-submit:disabled { opacity:0.6; cursor:not-allowed; transform:none; box-shadow:none; }
+.form-succes { display:none; text-align:center; padding:40px 32px; background:rgba(255,255,255,0.1); border-radius:12px; border:2px solid var(--geel); position:relative; z-index:1; }
+.form-succes .check { font-size:56px; margin-bottom:12px; animation: checkBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes checkBounce { from{transform:scale(0) rotate(-20deg)} to{transform:scale(1) rotate(0)} }
+.form-succes h3 { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--geel); margin-bottom:8px; }
 .form-succes p { font-size:14px; opacity:0.8; }
 
-footer { background:#0e3b1a; color:rgba(255,255,255,0.6); text-align:center; padding:28px 24px; font-size:13px; line-height:1.8; }
+/* ── OVER ONS (onderaan) ── */
+#over {
+  background: var(--donker); color: white;
+  position: relative; overflow: hidden;
+}
+#over::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--geel); }
+.over-parallax { position:absolute; inset:0; background: radial-gradient(ellipse 70% 50% at 80% 50%, rgba(26,92,42,0.6) 0%, transparent 70%); pointer-events:none; }
+.over-inner { position:relative; z-index:1; }
+.over-kop { text-align:center; margin-bottom:48px; }
+.over-kop .label { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:12px; letter-spacing:2px; padding:3px 12px; border-radius:2px; margin-bottom:16px; }
+.over-kop h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(36px,8vw,64px); letter-spacing:2px; color:white; line-height:1; }
+.over-kop h2 span { color:var(--geel); }
+.over-namen { display:flex; gap:20px; justify-content:center; margin-bottom:40px; flex-wrap:wrap; }
+.over-persoon { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:28px 32px; text-align:center; flex:1; min-width:200px; max-width:280px; transition: transform 0.3s, background 0.3s, box-shadow 0.3s; }
+.over-persoon:hover { transform: translateY(-8px) scale(1.02); background:rgba(245,200,0,0.08); box-shadow: 0 20px 48px rgba(0,0,0,0.3); }
+.over-persoon .emoji { font-size:52px; margin-bottom:12px; display:block; }
+.over-persoon h3 { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--geel); letter-spacing:1px; margin-bottom:4px; }
+.over-persoon .leeftijd { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; }
+.over-tekst { background:rgba(255,255,255,0.05); border-radius:14px; padding:32px; border-left:4px solid var(--geel); margin-bottom:32px; }
+.over-tekst p { font-size:16px; color:rgba(255,255,255,0.85); line-height:1.9; margin-bottom:16px; }
+.over-tekst p:last-child { margin-bottom:0; }
+.over-quote-groot { font-family:'Bebas Neue',sans-serif; font-size:clamp(22px,5vw,34px); color:var(--geel); letter-spacing:1px; text-align:center; margin-top:32px; padding:24px; border-top:1px solid rgba(255,255,255,0.1); }
+.over-cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:540px){.over-cards{grid-template-columns:1fr;}}
+.over-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:24px; transition: transform 0.3s, background 0.3s; }
+.over-card:hover { transform:translateY(-4px); background:rgba(255,255,255,0.09); }
+.over-card .icon { font-size:28px; margin-bottom:10px; }
+.over-card h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--geel); margin-bottom:6px; }
+.over-card p { font-size:14px; color:rgba(255,255,255,0.65); line-height:1.6; }
+
+/* ── FOOTER ── */
+footer { background:#050f07; color:rgba(255,255,255,0.5); text-align:center; padding:32px 24px; font-size:13px; line-height:1.9; }
 footer strong { color:white; }
 footer a { color:var(--geel); }
 </style>
@@ -142,15 +222,29 @@ footer a { color:var(--geel); }
 <nav>
   <div class="nav-logo">Dump<span>service</span></div>
   <div class="nav-links">
-    <a href="#over">Over ons</a>
     <a href="#prijzen">Prijzen</a>
     <a href="#werkgebied">Werkgebied</a>
     <a href="#faq">FAQ</a>
+    <a href="#over">Over ons</a>
     <a href="#aanvraag" class="nav-cta">Aanvragen</a>
   </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="#prijzen" onclick="sluitMenu()">Prijzen</a>
+  <a href="#werkgebied" onclick="sluitMenu()">Werkgebied</a>
+  <a href="#faq" onclick="sluitMenu()">FAQ</a>
+  <a href="#over" onclick="sluitMenu()">Over ons</a>
+  <a href="#aanvraag" onclick="sluitMenu()">Aanvragen ➜</a>
+</div>
 
 <section id="home">
+  <div class="hero-parallax-bg"></div>
+  <div class="hero-circle-1"></div>
+  <div class="hero-circle-2"></div>
+  <div class="hero-circle-3"></div>
   <div class="hero-badge" id="hero-datum">📅 VOLGENDE OPHAALDAG: LADEN...</div>
   <h1>Afval<span>ophaal</span>dag</h1>
   <p>Wij komen het ophalen in <strong>regio Zuid-Limburg</strong> — elke zaterdag. Schrijf je in en wij regelen de rest.</p>
@@ -158,44 +252,32 @@ footer a { color:var(--geel); }
     <a href="#aanvraag" class="btn-primary">Aanvraag Indienen</a>
     <a href="#prijzen" class="btn-secondary">Bekijk Prijzen</a>
   </div>
-</section>
-
-<div class="stats-bar">
-  <div class="stat"><div class="stat-num" id="stat-datum">—</div><div class="stat-label">Ophaaldag</div></div>
-  <div class="stat"><div class="stat-num">Regio ZL</div><div class="stat-label">Werkgebied</div></div>
-  <div class="stat"><div class="stat-num">€45</div><div class="stat-label">Vanaf</div></div>
-  <div class="stat"><div class="stat-num" id="stat-plekken">—</div><div class="stat-label">Plekken vrij</div></div>
-</div>
-
-<section id="over">
-  <div class="container">
-    <div class="sectie-kop">
-      <div class="label">OVER ONS</div>
-      <h2>Geen gedoe, gewoon weg</h2>
-      <p>Wij zijn een lokaal bedrijf uit Zuid-Limburg en zorgen dat jouw afval snel, netjes en verantwoord wordt afgevoerd.</p>
-    </div>
-    <div class="over-grid">
-      <div class="over-card"><div class="icon">🚛</div><h3>Wij komen naar jou</h3><p>Geen gedoe met aanhanger of rijbewijs BE. Zet je spullen klaar en wij laden alles in.</p></div>
-      <div class="over-card"><div class="icon">♻️</div><h3>Verantwoorde verwerking</h3><p>Al het afval wordt gescheiden aangeboden bij erkende verwerkers in de regio.</p></div>
-      <div class="over-card"><div class="icon">📍</div><h3>100% lokaal</h3><p>We kennen de regio, rijden efficiënte routes en zijn er snel bij in heel Zuid-Limburg.</p></div>
-      <div class="over-card"><div class="icon">💬</div><h3>Eerlijk & transparant</h3><p>Servicetarief vooraf duidelijk, stortkosten op basis van inschatting volume — geen verrassingen.</p></div>
-    </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
   </div>
 </section>
 
+<div class="stats-bar">
+  <div class="stat reveal delay-1"><div class="stat-num" id="stat-datum">—</div><div class="stat-label">Ophaaldag</div></div>
+  <div class="stat reveal delay-2"><div class="stat-num">Regio ZL</div><div class="stat-label">Werkgebied</div></div>
+  <div class="stat reveal delay-3"><div class="stat-num">€45</div><div class="stat-label">Vanaf</div></div>
+  <div class="stat reveal delay-4"><div class="stat-num" id="stat-plekken">—</div><div class="stat-label">Plekken vrij</div></div>
+</div>
+
 <section id="prijzen">
   <div class="container">
-    <div class="sectie-kop">
+    <div class="sectie-kop reveal">
       <div class="label">TARIEVEN</div>
       <h2>Eerlijke Prijzen</h2>
       <p>Servicetarief is vast per pakket. Stortkosten worden vooraf betaald op basis van een inschatting van het volume.</p>
     </div>
     <div class="pakketten">
-      <div class="pakket"><div class="pakket-icon">🚗</div><div class="pakket-info"><div class="pakket-naam">Klein</div><div class="pakket-omschrijving">Tot 1 m³ — Een paar zakken of kleine meubels</div></div><div class="pakket-prijs">€45<small>service</small></div></div>
-      <div class="pakket featured"><div class="pakket-icon">🚐</div><div class="pakket-info"><div class="pakket-naam">Middel</div><div class="pakket-omschrijving">1 – 3 m³ — Bankstel, kasten of aanhanger vol</div></div><div class="pakket-prijs">€75<small>service</small></div></div>
-      <div class="pakket"><div class="pakket-icon">🚛</div><div class="pakket-info"><div class="pakket-naam">Groot</div><div class="pakket-omschrijving">3 – 6 m³ — Bestelwagen vol of complete inboedel</div></div><div class="pakket-prijs">€120<small>service</small></div></div>
+      <div class="pakket reveal delay-1"><div class="pakket-icon">🚗</div><div class="pakket-info"><div class="pakket-naam">Klein</div><div class="pakket-omschrijving">Tot 1 m³ — Een paar zakken of kleine meubels</div></div><div class="pakket-prijs">€45<small>service</small></div></div>
+      <div class="pakket featured reveal delay-2"><div class="pakket-icon">🚐</div><div class="pakket-info"><div class="pakket-naam">Middel</div><div class="pakket-omschrijving">1 – 3 m³ — Bankstel, kasten of aanhanger vol</div></div><div class="pakket-prijs">€75<small>service</small></div></div>
+      <div class="pakket reveal delay-3"><div class="pakket-icon">🚛</div><div class="pakket-info"><div class="pakket-naam">Groot</div><div class="pakket-omschrijving">3 – 6 m³ — Bestelwagen vol of complete inboedel</div></div><div class="pakket-prijs">€120<small>service</small></div></div>
     </div>
-    <div class="stort-box">
+    <div class="stort-box reveal">
       <h3>🏭 Stortkosten worden apart berekend</h3>
       <div class="stort-rij"><span>Grofvuil / meubels / gemengd</span><span>RD4-tarief + 10%</span></div>
       <div class="stort-rij"><span>Bouwafval / puin / tegels</span><span>Op aanvraag</span></div>
@@ -207,11 +289,11 @@ footer a { color:var(--geel); }
 
 <section id="werkgebied">
   <div class="container">
-    <div class="sectie-kop"><div class="label">WERKGEBIED</div><h2>Regio Zuid-Limburg</h2><p>Wij rijden door heel Zuid-Limburg.</p></div>
-    <div class="kaart-wrapper">
+    <div class="sectie-kop reveal"><div class="label">WERKGEBIED</div><h2>Regio Zuid-Limburg</h2><p>Wij rijden door heel Zuid-Limburg.</p></div>
+    <div class="kaart-wrapper reveal">
       <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d81763!2d5.9!3d50.88!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1snl!2snl!4v1700000000000!5m2!1snl!2snl" allowfullscreen loading="lazy"></iframe>
     </div>
-    <div class="plaatsen">
+    <div class="plaatsen reveal">
       <span class="plaats">📍 Heerlen</span><span class="plaats">📍 Maastricht</span><span class="plaats">📍 Sittard</span>
       <span class="plaats">📍 Geleen</span><span class="plaats">📍 Kerkrade</span><span class="plaats">📍 Brunssum</span>
       <span class="plaats">📍 Landgraaf</span><span class="plaats">📍 Valkenburg</span><span class="plaats">📍 Beek</span>
@@ -222,25 +304,25 @@ footer a { color:var(--geel); }
 
 <section id="faq">
   <div class="container">
-    <div class="sectie-kop"><div class="label">FAQ</div><h2>Veelgestelde Vragen</h2></div>
+    <div class="sectie-kop reveal"><div class="label">FAQ</div><h2>Veelgestelde Vragen</h2></div>
     <div class="faq-lijst">
-      <div class="faq-item"><button class="faq-vraag">Hoe weet ik welk pakket ik nodig heb? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Schat het volume zo goed mogelijk in. Een bankstel + een paar zakken is ongeveer 2 m³ (Middel). Twijfel je? Stuur vooraf een foto en we denken met je mee.</div></div>
-      <div class="faq-item"><button class="faq-vraag">Wat moet ik zelf doen? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Alleen je spullen klaarleggen bij de voordeur, oprit of in de tuin. Wij laden zelf in en rijden alles weg.</div></div>
-      <div class="faq-item"><button class="faq-vraag">Wat nemen jullie NIET mee? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Geen asbest, chemisch afval (verf, olie, accu's), gasflessen of kadavers.</div></div>
-      <div class="faq-item"><button class="faq-vraag">Hoe worden de stortkosten berekend? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Stortkosten worden vooraf betaald op basis van een inschatting van het volume. We hanteren het RD4-tarief + 10%.</div></div>
-      <div class="faq-item"><button class="faq-vraag">Hoe betaal ik? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Betaling kan contant of via betaalverzoek (Tikkie / bank). Het servicetarief en de geschatte stortkosten worden vooraf betaald.</div></div>
+      <div class="faq-item reveal delay-1"><button class="faq-vraag">Hoe weet ik welk pakket ik nodig heb? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Schat het volume zo goed mogelijk in. Een bankstel + een paar zakken is ongeveer 2 m³ (Middel). Twijfel je? Stuur vooraf een foto en we denken met je mee.</div></div>
+      <div class="faq-item reveal delay-2"><button class="faq-vraag">Wat moet ik zelf doen? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Alleen je spullen klaarleggen bij de voordeur, oprit of in de tuin. Wij laden zelf in en rijden alles weg.</div></div>
+      <div class="faq-item reveal delay-3"><button class="faq-vraag">Wat nemen jullie NIET mee? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Geen asbest, chemisch afval (verf, olie, accu's), gasflessen of kadavers.</div></div>
+      <div class="faq-item reveal delay-4"><button class="faq-vraag">Hoe worden de stortkosten berekend? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Stortkosten worden vooraf betaald op basis van een inschatting van het volume. We hanteren het RD4-tarief + 10%.</div></div>
+      <div class="faq-item reveal"><button class="faq-vraag">Hoe betaal ik? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Betaling kan contant of via betaalverzoek (Tikkie / bank). Het servicetarief en de geschatte stortkosten worden vooraf betaald.</div></div>
     </div>
   </div>
 </section>
 
 <section id="aanvraag">
   <div class="container">
-    <div class="sectie-kop">
+    <div class="sectie-kop reveal">
       <div class="label">AANVRAGEN</div>
       <h2>Schrijf Je In</h2>
       <p>Vul het formulier in en we nemen zo snel mogelijk contact met je op ter bevestiging.</p>
     </div>
-    <div id="form-wrapper">
+    <div id="form-wrapper" class="reveal">
       <div class="form-grid">
         <div class="form-group"><label>Voornaam <span>*</span></label><input type="text" id="voornaam" class="form-control" placeholder="Jan"></div>
         <div class="form-group"><label>Achternaam <span>*</span></label><input type="text" id="achternaam" class="form-control" placeholder="Janssen"></div>
@@ -283,6 +365,39 @@ footer a { color:var(--geel); }
   </div>
 </section>
 
+<section id="over">
+  <div class="over-parallax"></div>
+  <div class="container over-inner">
+    <div class="over-kop reveal">
+      <div class="label">OVER ONS</div>
+      <h2>Jouw <span>rommel</span>,<br>onze zorg</h2>
+    </div>
+    <div class="over-namen">
+      <div class="over-persoon reveal-left delay-1">
+        <span class="emoji">🧔</span>
+        <h3>Sjoerd</h3>
+        <div class="leeftijd">27 jaar · Zuid-Limburg</div>
+      </div>
+      <div class="over-persoon reveal-right delay-2">
+        <span class="emoji">👨</span>
+        <h3>Daniël</h3>
+        <div class="leeftijd">28 jaar · Zuid-Limburg</div>
+      </div>
+    </div>
+    <div class="over-tekst reveal">
+      <p>Geen gedoe, geen gezeur. Wij komen gewoon langs, laden op en zorgen dat het netjes verwerkt wordt. Jij hoeft alleen maar de deur open te doen.</p>
+      <p>Dit is geen groot bedrijf met ingewikkelde formulieren — gewoon twee kerels die mensen graag ontzorgen. Eerlijk, betrouwbaar en met een lach.</p>
+    </div>
+    <div class="over-cards">
+      <div class="over-card reveal-left delay-1"><div class="icon">🚛</div><h3>Wij komen naar jou</h3><p>Geen gedoe met aanhanger. Zet je spullen klaar en wij laden alles in.</p></div>
+      <div class="over-card reveal-right delay-1"><div class="icon">♻️</div><h3>Verantwoorde verwerking</h3><p>Al het afval bij erkende verwerkers in de regio — netjes en verantwoord.</p></div>
+      <div class="over-card reveal-left delay-2"><div class="icon">📍</div><h3>100% lokaal</h3><p>We kennen de regio en rijden efficiënte routes door heel Zuid-Limburg.</p></div>
+      <div class="over-card reveal-right delay-2"><div class="icon">💬</div><h3>Eerlijk & transparant</h3><p>Servicetarief vooraf duidelijk, stortkosten op inschatting — geen verrassingen.</p></div>
+    </div>
+    <div class="over-quote-groot reveal">Samen tillen wij jouw probleem op. 💪🚛</div>
+  </div>
+</section>
+
 <footer>
   <strong>Dumpservice Zuid-Limburg</strong><br>
   Regio Zuid-Limburg · Elke zaterdag<br>
@@ -290,9 +405,7 @@ footer a { color:var(--geel); }
 </footer>
 
 <script>
-const VOLUME_M3 = { klein: 0.75, middel: 2, groot: 4.5, onbekend: 2 };
-const MAX_M3 = 24;
-
+// ── DATUM ──
 function volgendeSaterdag() {
   const nu = new Date();
   const dag = nu.getDay();
@@ -309,6 +422,7 @@ const datumTekst = formatDatum(zat);
 document.getElementById('hero-datum').textContent = '📅 VOLGENDE OPHAALDAG: ' + datumTekst.toUpperCase();
 document.getElementById('stat-datum').textContent = datumTekst;
 
+// ── URGENTIE ──
 async function updateUrgentie() {
   try {
     const res = await fetch('/api/capaciteit');
@@ -328,10 +442,13 @@ async function updateUrgentie() {
     if (stat) stat.textContent = plekken + ' vrij';
   } catch {
     document.getElementById('urgentie-tekst').textContent = `📅 Volgende ophaaldag: ${datumTekst}`;
+    const stat = document.getElementById('stat-plekken');
+    if (stat) stat.textContent = '—';
   }
 }
 updateUrgentie();
 
+// ── FORMULIER ──
 async function verstuurFormulier() {
   const vereist = ['voornaam','achternaam','email','straat','postcode','plaats','ruimte','volume'];
   let geldig = true;
@@ -341,11 +458,8 @@ async function verstuurFormulier() {
     else el.style.borderColor='';
   });
   if (!geldig) { alert('Vul alle verplichte velden in.'); return; }
-
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Versturen...';
-
+  btn.disabled = true; btn.textContent = 'Versturen...';
   const data = {
     voornaam: document.getElementById('voornaam').value.trim(),
     achternaam: document.getElementById('achternaam').value.trim(),
@@ -360,25 +474,21 @@ async function verstuurFormulier() {
     opmerking: document.getElementById('opmerking').value.trim(),
     datum: datumTekst,
   };
-
   try {
-    const res = await fetch('/api/aanvraag', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    const res = await fetch('/api/aanvraag', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
     if (!res.ok) throw new Error('Serverfout');
     document.getElementById('form-wrapper').style.display = 'none';
-    document.getElementById('succes-bericht').style.display = 'block';
-    document.getElementById('succes-bericht').scrollIntoView({ behavior:'smooth', block:'center' });
+    const succes = document.getElementById('succes-bericht');
+    succes.style.display = 'block';
+    succes.scrollIntoView({ behavior:'smooth', block:'center' });
     updateUrgentie();
   } catch {
     alert('Er ging iets mis. Probeer het opnieuw.');
-    btn.disabled = false;
-    btn.textContent = 'Aanvraag Versturen ➜';
+    btn.disabled = false; btn.textContent = 'Aanvraag Versturen ➜';
   }
 }
 
+// ── FAQ ──
 document.querySelectorAll('.faq-vraag').forEach(btn => {
   btn.addEventListener('click', () => {
     const item = btn.closest('.faq-item');
@@ -387,6 +497,43 @@ document.querySelectorAll('.faq-vraag').forEach(btn => {
     if (!isOpen) item.classList.add('open');
   });
 });
+
+// ── HAMBURGER ──
+function toggleMenu() {
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+function sluitMenu() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => observer.observe(el));
+
+// ── PARALLAX HERO ──
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const hero = document.getElementById('home');
+  if (hero) {
+    const bg = hero.querySelector('.hero-parallax-bg');
+    if (bg) bg.style.transform = `translateY(${scrollY * 0.4}px)`;
+    const c1 = hero.querySelector('.hero-circle-1');
+    const c2 = hero.querySelector('.hero-circle-2');
+    if (c1) c1.style.transform = `translateY(${scrollY * 0.25}px)`;
+    if (c2) c2.style.transform = `translateY(${scrollY * 0.15}px)`;
+  }
+  // Over ons parallax
+  const over = document.getElementById('over');
+  if (over) {
+    const rect = over.getBoundingClientRect();
+    const parallax = over.querySelector('.over-parallax');
+    if (parallax) parallax.style.transform = `translateY(${rect.top * 0.15}px)`;
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
