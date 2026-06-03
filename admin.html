@@ -83,6 +83,7 @@ body { background:var(--wit); font-family:'DM Sans',sans-serif; color:#111; min-
       <button class="admin-btn wit" onclick="laadData()">🔄 Vernieuwen</button>
       <button class="admin-btn" onclick="runAI()">🤖 AI Analyse</button>
       <button class="admin-btn wit" onclick="exportCSV()">⬇ CSV</button>
+      <button class="admin-btn rood" onclick="dagAfronden()">✅ Dag Afronden</button>
       <button class="admin-btn rood" onclick="uitloggen()">Uitloggen</button>
     </div>
   </div>
@@ -142,6 +143,26 @@ function login() {
   document.getElementById('login-scherm').style.display = 'none';
   document.getElementById('admin-scherm').style.display = 'block';
   laadData();
+}
+
+async function dagAfronden() {
+  if (!confirm('Weet je zeker dat je de dag wil afronden? Alle aanvragen krijgen status "afgerond".')) return;
+  try {
+    const res = await fetch('/api/afronden', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: adminWW }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`✅ Dag afgerond — ${data.afgerond} aanvragen bijgewerkt.`);
+      laadData();
+    } else {
+      alert('❌ Fout: ' + (data.error || 'onbekend'));
+    }
+  } catch (err) {
+    alert('❌ Fout: ' + err.message);
+  }
 }
 
 function uitloggen() {
