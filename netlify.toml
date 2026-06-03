@@ -25,6 +25,11 @@
   to = "/.netlify/functions/capaciteit"
   status = 200
 
+[[redirects]]
+  from = "/api/afronden"
+  to = "/.netlify/functions/afronden"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -34,4 +39,5 @@
 [[headers]]
   for = "/admin.html"
   [headers.values]
+    X-Robots-Tag = "noindex"
     X-Robots-Tag = "noindex"
