@@ -236,18 +236,47 @@ Maak een complete dagplanning:
 Antwoord in het Nederlands, gestructureerd met kopjes. Wees concreet en praktisch.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
+    const res = await fetch(`/api/planning?password=${encodeURIComponent(adminWW)}`, {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
     });
+    if (res.status === 401) { uitloggen(); return; }
     const data = await res.json();
-    const tekst = data.content?.map(b => b.text||'').join('') || 'Geen antwoord ontvangen.';
-    output.innerHTML = `<div class="ai-output">${tekst.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+
+    if (data.bericht) {
+      output.innerHTML = `<div class="ai-output">📭 ${data.bericht}</div>`;
+      return;
+    }
+
+    const f = data.financieel;
+    const v = data.voertuig;
+    const winstKleur = f.winst >= 0 ? '#86efac' : '#fca5a5';
+
+    output.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+        <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--geel);">€${f.omzet}</div>
+          <div style="font-size:11px;opacity:0.7;">Omzet</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fca5a5;">-€${f.stortkosten + f.huurkosten}</div>
+          <div style="font-size:11px;opacity:0.7;">Kosten</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${winstKleur};">€${f.winst}</div>
+          <div style="font-size:11px;opacity:0.7;">Winst totaal</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${winstKleur};">€${f.winstPerPersoon}</div>
+          <div style="font-size:11px;opacity:0.7;">Per persoon</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:14px;margin-bottom:16px;font-size:13px;">
+        🚐 <strong style="color:var(--geel);">${v.naam}</strong> — huur €${v.huurprijs} + verzekering €${v.verzekering} + km €${v.kmKosten} = <strong>€${v.totaalHuur}</strong>
+      </div>
+      ${data.googleMapsLink ? `<a href="${data.googleMapsLink}" target="_blank" style="display:inline-block;background:var(--geel);color:#1a5c2a;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:8px 16px;border-radius:5px;text-decoration:none;margin-bottom:16px;">🗺 Open Route in Google Maps</a>` : ''}
+      <div class="ai-output">${data.briefing.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+    `;
   } catch (err) {
     output.innerHTML = `<div class="ai-output">❌ Fout: ${err.message}</div>`;
   }
