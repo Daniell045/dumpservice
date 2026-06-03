@@ -49,9 +49,16 @@ nav {
 
 /* ── HERO ── */
 #home {
-  background: var(--groen); color: white; padding: 120px 24px 64px;
+  background: url('hero.jpg') center center / cover no-repeat;
+  color: white; padding: 120px 24px 80px;
   text-align: center; position: relative; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+#home::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(10,30,15,0.55) 0%, rgba(10,30,15,0.7) 100%);
+  z-index: 0;
 }
 .hero-parallax-bg {
   position: absolute; inset: -60px; z-index: 0;
@@ -81,10 +88,10 @@ nav {
 @keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(6px)} }
 
 /* ── STATS ── */
-.stats-bar { background:var(--geel); display:flex; justify-content:center; flex-wrap:wrap; position:relative; z-index:2; }
+.stats-bar { background:#c49a00; display:flex; justify-content:center; flex-wrap:wrap; position:relative; z-index:2; }
 .stat { padding:20px 36px; text-align:center; border-right:1px solid rgba(0,0,0,0.1); }
 .stat:last-child { border-right:none; }
-.stat-num { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--groen); line-height:1; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:32px; color:#0f2d1a; line-height:1; }
 .stat-label { font-size:12px; color:#333; font-weight:500; margin-top:2px; }
 
 /* ── ALGEMEEN ── */
@@ -220,7 +227,7 @@ footer a { color:var(--geel); }
 </div>
 
 <nav>
-  <div class="nav-logo"><img src="logo.png" alt="Dumpservice" style="height:36px;display:block;"></div>
+  <div class="nav-logo">Dump<span>service</span></div>
   <div class="nav-links">
     <a href="#prijzen">Prijzen</a>
     <a href="#werkgebied">Werkgebied</a>
@@ -241,7 +248,6 @@ footer a { color:var(--geel); }
 </div>
 
 <section id="home">
-  <div class="hero-parallax-bg"></div>
   
   
   
