@@ -236,10 +236,7 @@ Maak een complete dagplanning:
 Antwoord in het Nederlands, gestructureerd met kopjes. Wees concreet en praktisch.`;
 
   try {
-    const res = await fetch(`/api/planning?password=${encodeURIComponent(adminWW)}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const res = await fetch(`/api/planning?password=${encodeURIComponent(adminWW)}`);
     if (res.status === 401) { uitloggen(); return; }
     const data = await res.json();
 
@@ -249,33 +246,47 @@ Antwoord in het Nederlands, gestructureerd met kopjes. Wees concreet en praktisc
     }
 
     const f = data.financieel;
-    const v = data.voertuig;
     const winstKleur = f.winst >= 0 ? '#86efac' : '#fca5a5';
 
+    function renderPersoon(naam, p) {
+      if (!p) return '';
+      const r = p.rondeInfo || {};
+      return `
+        <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:20px;margin-bottom:16px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--geel);margin-bottom:12px;">
+            🚐 ${naam} — ${p.voertuig.naam} (${p.m3} m³)
+            ${p.km ? `· ~${p.km} km` : ''}
+            ${p.minuten ? `· ~${p.minuten} min` : ''}
+          </div>
+          ${p.googleMapsLink ? `<a href="${p.googleMapsLink}" target="_blank" style="display:inline-block;background:var(--geel);color:#1a4a2e;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:6px 14px;border-radius:4px;text-decoration:none;margin-bottom:12px;">🗺 Open in Google Maps</a>` : ''}
+          ${r.tweedeRondeAdvies ? `<div style="background:rgba(134,239,172,0.15);border:1px solid rgba(134,239,172,0.3);border-radius:6px;padding:10px;font-size:13px;margin-bottom:12px;">✅ <strong>Tweede ronde mogelijk</strong> — eindtijd ronde 1: ${r.eindtijdRonde1Str}, nog ~${r.extraStopsMogelijk} extra stops mogelijk</div>` : `<div style="background:rgba(252,165,165,0.1);border:1px solid rgba(252,165,165,0.2);border-radius:6px;padding:10px;font-size:13px;margin-bottom:12px;">⛔ Geen tweede ronde — te weinig tijd na ${r.eindtijdRonde1Str}</div>`}
+          <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${(p.briefing||'').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+        </div>
+      `;
+    }
+
     output.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px;">
         <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--geel);">€${f.omzet}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--geel);">€${f.omzet}</div>
           <div style="font-size:11px;opacity:0.7;">Omzet</div>
         </div>
         <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fca5a5;">-€${f.stortkosten + f.huurkosten}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fca5a5;">-€${f.stortkosten + f.huurkosten}</div>
           <div style="font-size:11px;opacity:0.7;">Kosten</div>
         </div>
         <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${winstKleur};">€${f.winst}</div>
-          <div style="font-size:11px;opacity:0.7;">Winst totaal</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:${winstKleur};">€${f.winst}</div>
+          <div style="font-size:11px;opacity:0.7;">Winst</div>
         </div>
         <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;text-align:center;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${winstKleur};">€${f.winstPerPersoon}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:${winstKleur};">€${f.winstPerPersoon}</div>
           <div style="font-size:11px;opacity:0.7;">Per persoon</div>
         </div>
       </div>
-      <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:14px;margin-bottom:16px;font-size:13px;">
-        🚐 <strong style="color:var(--geel);">${v.naam}</strong> — huur €${v.huurprijs} + verzekering €${v.verzekering} + km €${v.kmKosten} = <strong>€${v.totaalHuur}</strong>
-      </div>
-      ${data.googleMapsLink ? `<a href="${data.googleMapsLink}" target="_blank" style="display:inline-block;background:var(--geel);color:#1a5c2a;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:8px 16px;border-radius:5px;text-decoration:none;margin-bottom:16px;">🗺 Open Route in Google Maps</a>` : ''}
-      <div class="ai-output">${data.briefing.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+      <div style="font-size:12px;opacity:0.6;margin-bottom:16px;">${data.tweePersoons ? '👥 Twee routes — genoeg volume voor 2 personen' : '👤 Één route — Sjoerd rijdt alleen'}</div>
+      ${renderPersoon('Sjoerd', data.sjoerd)}
+      ${renderPersoon('Daniël', data.daniel)}
     `;
   } catch (err) {
     output.innerHTML = `<div class="ai-output">❌ Fout: ${err.message}</div>`;
