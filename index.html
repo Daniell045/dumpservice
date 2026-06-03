@@ -8,7 +8,7 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --groen: #1a5c2a; --groen-licht: #2d8c42; --geel: #f5c800;
+  --groen: #1e4d2b; --groen-licht: #2a6b3a; --geel: #f5c800;
   --wit: #f9f7f2; --donker: #111; --grijs: #555;
 }
 html { scroll-behavior: smooth; }
@@ -49,8 +49,8 @@ nav {
 
 /* ── HERO ── */
 #home {
-  background: var(--groen); color: white; padding: 160px 24px 80px;
-  text-align: center; position: relative; overflow: hidden; min-height: 100vh;
+  background: var(--groen); color: white; padding: 120px 24px 64px;
+  text-align: center; position: relative; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .hero-parallax-bg {
@@ -58,10 +58,10 @@ nav {
   background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(245,200,0,0.15) 0%, transparent 70%),
               radial-gradient(ellipse 60% 80% at 20% 80%, rgba(45,140,66,0.3) 0%, transparent 60%);
 }
-.hero-circle-1 { position:absolute; top:-80px; right:-80px; width:380px; height:380px; background:var(--geel); border-radius:50%; opacity:0.08; z-index:0; animation: floatCircle 8s ease-in-out infinite; }
-.hero-circle-2 { position:absolute; bottom:-100px; left:-60px; width:300px; height:300px; background:var(--geel); border-radius:50%; opacity:0.06; z-index:0; animation: floatCircle 11s ease-in-out infinite reverse; }
-.hero-circle-3 { position:absolute; top:50%; left:10%; width:120px; height:120px; background:white; border-radius:50%; opacity:0.04; z-index:0; animation: floatCircle 6s ease-in-out infinite 2s; }
-@keyframes floatCircle { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-30px) scale(1.05)} }
+
+
+
+
 #home > * { position: relative; z-index: 1; }
 .hero-badge { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:2px; padding:4px 14px; border-radius:2px; margin-bottom:20px; animation: badgePop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both; }
 @keyframes badgePop { from{opacity:0;transform:scale(0.6) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
@@ -188,12 +188,12 @@ textarea.form-control { resize:vertical; min-height:100px; }
 .over-kop .label { display:inline-block; background:var(--geel); color:var(--groen); font-family:'Bebas Neue',sans-serif; font-size:12px; letter-spacing:2px; padding:3px 12px; border-radius:2px; margin-bottom:16px; }
 .over-kop h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(36px,8vw,64px); letter-spacing:2px; color:white; line-height:1; }
 .over-kop h2 span { color:var(--geel); }
-.over-namen { display:flex; gap:20px; justify-content:center; margin-bottom:40px; flex-wrap:wrap; }
-.over-persoon { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:28px 32px; text-align:center; flex:1; min-width:200px; max-width:280px; transition: transform 0.3s, background 0.3s, box-shadow 0.3s; }
-.over-persoon:hover { transform: translateY(-8px) scale(1.02); background:rgba(245,200,0,0.08); box-shadow: 0 20px 48px rgba(0,0,0,0.3); }
-.over-persoon .emoji { font-size:52px; margin-bottom:12px; display:block; }
-.over-persoon h3 { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--geel); letter-spacing:1px; margin-bottom:4px; }
-.over-persoon .leeftijd { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; }
+.over-foto-wrapper { position:relative; margin-bottom:36px; border-radius:16px; overflow:hidden; border:3px solid rgba(245,200,0,0.3); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+.over-foto { width:100%; max-height:400px; object-fit:cover; display:block; }
+.over-foto-placeholder { display:none; width:100%; height:260px; background:rgba(255,255,255,0.05); align-items:center; justify-content:center; flex-direction:column; gap:12px; border-radius:13px; }
+.over-foto-placeholder span { font-size:48px; }
+.over-foto-placeholder p { font-size:14px; color:rgba(255,255,255,0.4); }
+.over-foto-namen { background:rgba(0,0,0,0.5); padding:10px 16px; text-align:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; letter-spacing:0.5px; }
 .over-tekst { background:rgba(255,255,255,0.05); border-radius:14px; padding:32px; border-left:4px solid var(--geel); margin-bottom:32px; }
 .over-tekst p { font-size:16px; color:rgba(255,255,255,0.85); line-height:1.9; margin-bottom:16px; }
 .over-tekst p:last-child { margin-bottom:0; }
@@ -220,7 +220,7 @@ footer a { color:var(--geel); }
 </div>
 
 <nav>
-  <div class="nav-logo">Dump<span>service</span></div>
+  <div class="nav-logo"><img src="logo.png" alt="Dumpservice" style="height:36px;display:block;"></div>
   <div class="nav-links">
     <a href="#prijzen">Prijzen</a>
     <a href="#werkgebied">Werkgebied</a>
@@ -242,9 +242,9 @@ footer a { color:var(--geel); }
 
 <section id="home">
   <div class="hero-parallax-bg"></div>
-  <div class="hero-circle-1"></div>
-  <div class="hero-circle-2"></div>
-  <div class="hero-circle-3"></div>
+  
+  
+  
   <div class="hero-badge" id="hero-datum">📅 VOLGENDE OPHAALDAG: LADEN...</div>
   <h1>Afval<span>ophaal</span>dag</h1>
   <p>Wij komen het ophalen in <strong>regio Zuid-Limburg</strong> — elke zaterdag. Schrijf je in en wij regelen de rest.</p>
@@ -265,6 +265,37 @@ footer a { color:var(--geel); }
   <div class="stat reveal delay-4"><div class="stat-num" id="stat-plekken">—</div><div class="stat-label">Plekken vrij</div></div>
 </div>
 
+<section id="over">
+  <div class="over-parallax"></div>
+  <div class="container over-inner">
+    <div class="over-kop reveal">
+      <div class="label">OVER ONS</div>
+      <h2>Jouw <span>rommel</span>,<br>onze zorg</h2>
+    </div>
+    <div class="over-foto-wrapper reveal">
+      <img src="foto-sjoerd-daniel.jpg" alt="Sjoerd en Daniël" class="over-foto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="over-foto-placeholder">
+        <span>📸</span>
+        <p>Foto komt hier</p>
+      </div>
+      <div class="over-foto-namen">
+        <span>Sjoerd & Daniël · Dumpservice Zuid-Limburg</span>
+      </div>
+    </div>
+    <div class="over-tekst reveal">
+      <p>Geen gedoe, geen gezeur. Wij komen gewoon langs, laden op en zorgen dat het netjes verwerkt wordt. Jij hoeft alleen maar de deur open te doen.</p>
+      <p>Dit is geen groot bedrijf met ingewikkelde formulieren — gewoon twee kerels die mensen graag ontzorgen. Eerlijk, betrouwbaar en met een lach.</p>
+    </div>
+    <div class="over-cards">
+      <div class="over-card reveal-left delay-1"><div class="icon">🚛</div><h3>Wij komen naar jou</h3><p>Geen gedoe met aanhanger. Zet je spullen klaar en wij laden alles in.</p></div>
+      <div class="over-card reveal-right delay-1"><div class="icon">♻️</div><h3>Verantwoorde verwerking</h3><p>Al het afval bij erkende verwerkers in de regio — netjes en verantwoord.</p></div>
+      <div class="over-card reveal-left delay-2"><div class="icon">📍</div><h3>100% lokaal</h3><p>We kennen de regio en rijden efficiënte routes door heel Zuid-Limburg.</p></div>
+      <div class="over-card reveal-right delay-2"><div class="icon">💬</div><h3>Eerlijk & transparant</h3><p>Servicetarief vooraf duidelijk, stortkosten op inschatting — geen verrassingen.</p></div>
+    </div>
+    <div class="over-quote-groot reveal">Samen tillen wij jouw probleem op. 💪🚛</div>
+  </div>
+</section>
+
 <section id="prijzen">
   <div class="container">
     <div class="sectie-kop reveal">
@@ -279,10 +310,11 @@ footer a { color:var(--geel); }
     </div>
     <div class="stort-box reveal">
       <h3>🏭 Stortkosten worden apart berekend</h3>
-      <div class="stort-rij"><span>Grofvuil / meubels / gemengd</span><span>RD4-tarief + 10%</span></div>
-      <div class="stort-rij"><span>Bouwafval / puin / tegels</span><span>Op aanvraag</span></div>
+      <div class="stort-rij"><span>Grofvuil / meubels / gemengd</span><span>€35 per m³</span></div>
+      <div class="stort-rij"><span>Bouw- en sloopafval (BSA)</span><span>€100 per m³</span></div>
+      <div class="stort-rij"><span>Hout</span><span>€20 per m³</span></div>
       <div class="stort-rij"><span>Elektronica / gevaarlijk afval</span><span>Op aanvraag</span></div>
-      <p class="stort-note">Stortkosten worden vooraf betaald op basis van een inschatting van het volume.</p>
+      <p class="stort-note">🪣 Stortkosten worden vooraf betaald op basis van een inschatting van het volume.</p>
     </div>
   </div>
 </section>
@@ -365,38 +397,6 @@ footer a { color:var(--geel); }
   </div>
 </section>
 
-<section id="over">
-  <div class="over-parallax"></div>
-  <div class="container over-inner">
-    <div class="over-kop reveal">
-      <div class="label">OVER ONS</div>
-      <h2>Jouw <span>rommel</span>,<br>onze zorg</h2>
-    </div>
-    <div class="over-namen">
-      <div class="over-persoon reveal-left delay-1">
-        <span class="emoji">🧔</span>
-        <h3>Sjoerd</h3>
-        <div class="leeftijd">27 jaar · Zuid-Limburg</div>
-      </div>
-      <div class="over-persoon reveal-right delay-2">
-        <span class="emoji">👨</span>
-        <h3>Daniël</h3>
-        <div class="leeftijd">28 jaar · Zuid-Limburg</div>
-      </div>
-    </div>
-    <div class="over-tekst reveal">
-      <p>Geen gedoe, geen gezeur. Wij komen gewoon langs, laden op en zorgen dat het netjes verwerkt wordt. Jij hoeft alleen maar de deur open te doen.</p>
-      <p>Dit is geen groot bedrijf met ingewikkelde formulieren — gewoon twee kerels die mensen graag ontzorgen. Eerlijk, betrouwbaar en met een lach.</p>
-    </div>
-    <div class="over-cards">
-      <div class="over-card reveal-left delay-1"><div class="icon">🚛</div><h3>Wij komen naar jou</h3><p>Geen gedoe met aanhanger. Zet je spullen klaar en wij laden alles in.</p></div>
-      <div class="over-card reveal-right delay-1"><div class="icon">♻️</div><h3>Verantwoorde verwerking</h3><p>Al het afval bij erkende verwerkers in de regio — netjes en verantwoord.</p></div>
-      <div class="over-card reveal-left delay-2"><div class="icon">📍</div><h3>100% lokaal</h3><p>We kennen de regio en rijden efficiënte routes door heel Zuid-Limburg.</p></div>
-      <div class="over-card reveal-right delay-2"><div class="icon">💬</div><h3>Eerlijk & transparant</h3><p>Servicetarief vooraf duidelijk, stortkosten op inschatting — geen verrassingen.</p></div>
-    </div>
-    <div class="over-quote-groot reveal">Samen tillen wij jouw probleem op. 💪🚛</div>
-  </div>
-</section>
 
 <footer>
   <strong>Dumpservice Zuid-Limburg</strong><br>
