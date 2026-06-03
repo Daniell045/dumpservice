@@ -1,0 +1,9 @@
+{
+  "name": "dumpservice",
+  "version": "1.0.0",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "@anthropic-ai/sdk": "^0.27.0",
+    "resend": "^4.0.0"
+  }
+}
