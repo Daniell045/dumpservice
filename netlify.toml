@@ -5,6 +5,26 @@
 [functions]
   node_bundler = "esbuild"
 
+[[redirects]]
+  from = "/api/aanvraag"
+  to = "/.netlify/functions/aanvraag"
+  status = 200
+
+[[redirects]]
+  from = "/api/aanvragen"
+  to = "/.netlify/functions/aanvragen"
+  status = 200
+
+[[redirects]]
+  from = "/api/planning"
+  to = "/.netlify/functions/planning"
+  status = 200
+
+[[redirects]]
+  from = "/api/capaciteit"
+  to = "/.netlify/functions/capaciteit"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
