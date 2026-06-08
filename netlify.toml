@@ -40,4 +40,3 @@
   for = "/admin.html"
   [headers.values]
     X-Robots-Tag = "noindex"
-    X-Robots-Tag = "noindex"
