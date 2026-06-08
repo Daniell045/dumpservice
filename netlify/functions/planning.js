@@ -11,10 +11,11 @@ const VOERTUIGEN = [
 const VERZEKERING_PER_DAG    = 19;
 const KM_PRIJS               = 0.21;
 const GESCHATTE_KM_PER_ROUTE = 80;
-const START_TIJD             = 8 * 60;  // 08:00 in minuten
-const MAX_EINDTIJD           = 18 * 60; // 18:00 max
+const START_TIJD             = 8 * 60;
+const MAX_EINDTIJD           = 18 * 60;
 const MINUTEN_PER_STOP       = 25;
 const MINUTEN_NAAR_STORT     = 20;
+const MIN_WINST_PER_RIT      = 50; // minimale winst per rit om het te doen
 
 const VOLUME_M3 = { klein: 0.75, middel: 2, groot: 4.5, onbekend: 2 };
 const SERVICE_PRIJS = { klein: 45, middel: 75, groot: 120, onbekend: 75 };
@@ -27,8 +28,30 @@ const STORTKOSTEN = {
   'Anders / combinatie': 35,
 };
 
+// Weken wachttijd per aanvraag berekenen
+function aantalWekenWachten(timestamp) {
+  if (!timestamp) return 0;
+  const nu = new Date();
+  const aangemeld = new Date(timestamp);
+  return Math.floor((nu - aangemeld) / (7 * 24 * 60 * 60 * 1000));
+}
+
 function kiesVoertuig(m3) {
   return VOERTUIGEN.find(v => v.maxM3 >= m3) || VOERTUIGEN[VOERTUIGEN.length - 1];
+}
+
+function berekenFinancien(geselecteerd, tweePersoons) {
+  const totaalM3 = geselecteerd.reduce((s, a) => s + (VOLUME_M3[a.volume] || 2), 0);
+  const omzet = geselecteerd.reduce((s, a) => s + (SERVICE_PRIJS[a.volume] || 75), 0);
+  const stortkosten = geselecteerd.reduce((s, a) => {
+    return s + ((VOLUME_M3[a.volume] || 2) * (STORTKOSTEN[a.soort] ?? 35));
+  }, 0);
+  const aantalVoertuigen = tweePersoons ? 2 : 1;
+  const voertuig = kiesVoertuig(tweePersoons ? totaalM3 / 2 : totaalM3);
+  const huurPerVoertuig = voertuig.huurprijs + VERZEKERING_PER_DAG + (GESCHATTE_KM_PER_ROUTE * KM_PRIJS);
+  const huurTotaal = huurPerVoertuig * aantalVoertuigen;
+  const winst = omzet - huurTotaal - stortkosten;
+  return { totaalM3, omzet, stortkosten: Math.round(stortkosten), huurTotaal: Math.round(huurTotaal), winst: Math.round(winst), voertuig };
 }
 
 function berekenRondeInfo(aantalStops, rijtijdMinuten) {
@@ -72,9 +95,9 @@ async function maakBriefing(client, naam, voertuig, stops, km, minuten, rondeInf
     const m3 = VOLUME_M3[a.volume] || 2;
     return `Stop ${i + 1}: ${a.voornaam} ${a.achternaam}
   Adres: ${a.straat}, ${a.postcode} ${a.plaats}
+  Tel: ${a.telefoon || 'niet opgegeven'}
   Volume: ${a.volume} (~${m3} m³) | Soort: ${a.soort || 'onbekend'}
-  Ruimte: ${a.ruimte}${a.opmerking ? ` | Opmerking: ${a.opmerking}` : ''}
-  Tel: ${a.telefoon || 'niet opgegeven'}`;
+  Ruimte: ${a.ruimte}${a.opmerking ? ` | Opmerking: ${a.opmerking}` : ''}`;
   }).join('\n\n');
 
   const msg = await client.messages.create({
@@ -106,21 +129,87 @@ Bondig, direct, Nederlands.`,
   return msg.content[0].text;
 }
 
+async function maakKlantMail(client, geselecteerd, datum) {
+  const namen = geselecteerd.map(a => a.voornaam).join(', ');
+  const adressen = geselecteerd.map(a => `- ${a.voornaam} ${a.achternaam}, ${a.straat} ${a.plaats}`).join('\n');
+
+  const msg = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 600,
+    messages: [{
+      role: 'user',
+      content: `Schrijf een korte, vriendelijke mail namens Dumpservice Zuid-Limburg naar de volgende klanten:
+${adressen}
+
+De mail is voor ophaaldag: ${datum}
+
+De mail moet:
+- Persoonlijk en informeel zijn (geen "geachte")
+- Bevestigen dat we langskomen op ${datum}
+- Vragen of ze de spullen klaar kunnen zetten buiten
+- Zeggen dat we 's ochtends contact opnemen met een tijdsindicatie
+- Eindigen met Sjoerd & Daniël van Dumpservice
+
+Schrijf de mail zodat je hem makkelijk kan aanpassen. Gebruik [NAAM] als placeholder voor de naam van de klant.
+Houd het kort — max 5 regels tekst.`,
+    }],
+  });
+  return msg.content[0].text;
+}
+
+async function maakSelectieAdvies(client, alleAanvragen) {
+  const aanvraagInfo = alleAanvragen.map((a, i) => {
+    const weken = aantalWekenWachten(a.timestamp);
+    const m3 = VOLUME_M3[a.volume] || 2;
+    const omzet = SERVICE_PRIJS[a.volume] || 75;
+    const stortK = m3 * (STORTKOSTEN[a.soort] ?? 35);
+    return `${i + 1}. ${a.voornaam} ${a.achternaam} | ${a.postcode} ${a.plaats} | ${a.volume} (${m3}m³) | Soort: ${a.soort || 'onbekend'} | Service: €${omzet} | Wacht: ${weken} weken${a.opmerking ? ` | Opmerking: ${a.opmerking}` : ''}`;
+  }).join('\n');
+
+  const msg = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 800,
+    messages: [{
+      role: 'user',
+      content: `Je bent de planner van Dumpservice Zuid-Limburg. Analyseer deze aanvragen en geef advies over welke je het beste samen kunt oppakken.
+
+ALLE AANVRAGEN:
+${aanvraagInfo}
+
+Voertuigcapaciteit: max 17 m³ per bus (liefst 1 bus, max 3)
+Startlocatie: Brunssum
+Max werkdag: 08:00-18:00
+
+Geef advies:
+1. Welke combinatie van aanvragen is het meest rendabel EN logistiek slim?
+2. Zijn er aanvragen die te lang wachten (>3 weken) en prioriteit verdienen?
+3. Zijn er aanvragen die je beter kunt overslaan of doorschuiven (te ver, te weinig marge)?
+4. Hoeveel bussen adviseer je?
+
+Wees direct en concreet. Noem namen. Max 200 woorden.`,
+    }],
+  });
+  return msg.content[0].text;
+}
+
 exports.handler = async (event) => {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   };
 
-  // Auth
   const password = event.queryStringParameters?.password
     || (event.body ? JSON.parse(event.body).password : null);
   if (!password || password !== process.env.ADMIN_PASSWORD) {
     return { statusCode: 401, headers, body: JSON.stringify({ error: 'Niet geautoriseerd' }) };
   }
 
+  // Optioneel: geselecteerde IDs meegeven vanuit admin
+  const body = event.body ? JSON.parse(event.body) : {};
+  const geselecteerdeIds = body.geselecteerdeIds || null;
+  const ophaalDatum = body.datum || 'aankomende zaterdag';
+
   try {
-    // ── Aanvragen ophalen ──
     const store = getStore({
       name: 'aanvragen',
       siteID: process.env.NETLIFY_SITE_ID,
@@ -128,27 +217,45 @@ exports.handler = async (event) => {
     });
 
     const { blobs } = await store.list();
-    const aanvragen = [];
+    const alleAanvragen = [];
     for (const blob of blobs) {
       try {
         const item = await store.get(blob.key, { type: 'json' });
-        if (item) aanvragen.push(item);
+        if (item && item.status !== 'afgerond') alleAanvragen.push(item);
       } catch {}
     }
 
-    if (aanvragen.length === 0) {
-      return { statusCode: 200, headers, body: JSON.stringify({ bericht: 'Geen aanvragen gevonden.' }) };
+    if (alleAanvragen.length === 0) {
+      return { statusCode: 200, headers, body: JSON.stringify({ bericht: 'Geen openstaande aanvragen gevonden.' }) };
     }
 
-    // ── Routes splitsen ──
-    const totaalM3 = aanvragen.reduce((s, a) => s + (VOLUME_M3[a.volume] || 2), 0);
-    const tweePersoons = totaalM3 > 10 && aanvragen.length > 4;
+    // Sorteer op wachttijd (oudste eerst)
+    alleAanvragen.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-    let route1 = aanvragen;
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+    // Als admin specifieke IDs heeft geselecteerd, gebruik die — anders gebruik alle
+    const geselecteerd = geselecteerdeIds
+      ? alleAanvragen.filter(a => geselecteerdeIds.includes(a.id))
+      : alleAanvragen;
+
+    if (geselecteerd.length === 0) {
+      return { statusCode: 200, headers, body: JSON.stringify({ bericht: 'Geen aanvragen gevonden met die IDs.' }) };
+    }
+
+    // AI selectie advies (altijd op basis van alle aanvragen)
+    const selectieAdvies = await maakSelectieAdvies(client, alleAanvragen);
+
+    // Financiën berekenen
+    const totaalM3 = geselecteerd.reduce((s, a) => s + (VOLUME_M3[a.volume] || 2), 0);
+    const tweePersoons = totaalM3 > 10 && geselecteerd.length > 4;
+    const fin = berekenFinancien(geselecteerd, tweePersoons);
+
+    // Routes splitsen
+    let route1 = geselecteerd;
     let route2 = [];
-
     if (tweePersoons) {
-      const gesorteerd = [...aanvragen].sort((a, b) => (a.postcode || '').localeCompare(b.postcode || ''));
+      const gesorteerd = [...geselecteerd].sort((a, b) => (a.postcode || '').localeCompare(b.postcode || ''));
       const helft = Math.ceil(gesorteerd.length / 2);
       route1 = gesorteerd.slice(0, helft);
       route2 = gesorteerd.slice(helft);
@@ -159,17 +266,7 @@ exports.handler = async (event) => {
     const voertuig1 = kiesVoertuig(m3R1);
     const voertuig2 = tweePersoons ? kiesVoertuig(m3R2) : null;
 
-    // ── Financiën ──
-    const omzet = aanvragen.reduce((s, a) => s + (SERVICE_PRIJS[a.volume] || 75), 0);
-    const stortkosten = aanvragen.reduce((s, a) => {
-      return s + ((VOLUME_M3[a.volume] || 2) * (STORTKOSTEN[a.soort] ?? 35));
-    }, 0);
-    const huur1 = voertuig1.huurprijs + VERZEKERING_PER_DAG + (GESCHATTE_KM_PER_ROUTE * KM_PRIJS);
-    const huur2 = voertuig2 ? voertuig2.huurprijs + VERZEKERING_PER_DAG + (GESCHATTE_KM_PER_ROUTE * KM_PRIJS) : 0;
-    const huurTotaal = huur1 + huur2;
-    const winst = omzet - huurTotaal - stortkosten;
-
-    // ── Google Maps ──
+    // Google Maps
     const adr1 = route1.map(a => `${a.straat}, ${a.postcode} ${a.plaats}, Nederland`);
     const adr2 = route2.map(a => `${a.straat}, ${a.postcode} ${a.plaats}, Nederland`);
     const [gmap1, gmap2] = await Promise.all([
@@ -180,17 +277,16 @@ exports.handler = async (event) => {
     const stopsR1 = gmap1 ? gmap1.volgorde.map(i => route1[i]) : route1;
     const stopsR2 = gmap2 ? gmap2.volgorde.map(i => route2[i]) : route2;
 
-    // ── Ronde info ──
     const rondeInfo1 = berekenRondeInfo(stopsR1.length, gmap1?.minuten);
     const rondeInfo2 = tweePersoons ? berekenRondeInfo(stopsR2.length, gmap2?.minuten) : null;
 
-    // ── Briefings via Claude ──
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const [briefingSjoerd, briefingDaniel] = await Promise.all([
+    // Briefings + klantmail parallel
+    const [briefingSjoerd, briefingDaniel, klantMail] = await Promise.all([
       maakBriefing(client, 'Sjoerd', voertuig1, stopsR1, gmap1?.km, gmap1?.minuten, rondeInfo1),
       tweePersoons
         ? maakBriefing(client, 'Daniël', voertuig2, stopsR2, gmap2?.km, gmap2?.minuten, rondeInfo2)
         : Promise.resolve(null),
+      maakKlantMail(client, geselecteerd, ophaalDatum),
     ]);
 
     const mapsLink = (stops) =>
@@ -198,30 +294,35 @@ exports.handler = async (event) => {
 
     const formatStop = (a, i) => ({
       stop: i + 1,
+      id: a.id,
       naam: `${a.voornaam} ${a.achternaam}`,
       adres: `${a.straat}, ${a.postcode} ${a.plaats}`,
       telefoon: a.telefoon || null,
+      email: a.email || null,
       volume: a.volume,
       m3: VOLUME_M3[a.volume] || 2,
       soort: a.soort || null,
       ruimte: a.ruimte,
       opmerking: a.opmerking || null,
+      weken: aantalWekenWachten(a.timestamp),
     });
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        datum: aanvragen[0]?.datum || 'Aankomende zaterdag',
-        aantalAanvragen: aanvragen.length,
+        aantalAanvragen: alleAanvragen.length,
+        aantalGeselecteerd: geselecteerd.length,
         totaalM3: totaalM3.toFixed(1),
         tweePersoons,
+        selectieAdvies,
+        klantMail,
         financieel: {
-          omzet,
-          stortkosten: Math.round(stortkosten),
-          huurkosten: Math.round(huurTotaal),
-          winst: Math.round(winst),
-          winstPerPersoon: Math.round(winst / 2),
+          omzet: fin.omzet,
+          stortkosten: fin.stortkosten,
+          huurkosten: fin.huurTotaal,
+          winst: fin.winst,
+          winstPerPersoon: Math.round(fin.winst / 2),
         },
         sjoerd: {
           voertuig: voertuig1,
@@ -243,6 +344,15 @@ exports.handler = async (event) => {
           briefing: briefingDaniel,
           googleMapsLink: mapsLink(stopsR2),
         } : null,
+        overigeAanvragen: geselecteerdeIds
+          ? alleAanvragen.filter(a => !geselecteerdeIds.includes(a.id)).map(a => ({
+              id: a.id,
+              naam: `${a.voornaam} ${a.achternaam}`,
+              adres: `${a.straat}, ${a.postcode} ${a.plaats}`,
+              volume: a.volume,
+              weken: aantalWekenWachten(a.timestamp),
+            }))
+          : [],
       }),
     };
 
