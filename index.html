@@ -96,6 +96,22 @@ section { padding:72px 24px; }
 .delay-3 { transition-delay: 0.3s !important; }
 .delay-4 { transition-delay: 0.4s !important; }
 
+
+/* ── HOE WERKT HET ── */
+#hoe { background: var(--donker); color: white; position: relative; overflow: hidden; }
+#hoe::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--geel); }
+#hoe .sectie-kop .label { background:var(--geel); color:var(--groen); }
+#hoe .sectie-kop h2 { color: white; }
+#hoe .sectie-kop p { color: rgba(255,255,255,0.6); }
+.stappen { display: flex; flex-direction: column; gap: 0; position: relative; }
+.stap { display: flex; gap: 20px; align-items: flex-start; padding: 28px 0; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; transition: transform 0.3s; }
+.stap:last-child { border-bottom: none; }
+.stap:hover { transform: translateX(6px); }
+.stap-nummer { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--geel); line-height: 1; min-width: 56px; opacity: 0.85; }
+.stap-inhoud h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--geel); letter-spacing: 1px; margin-bottom: 6px; }
+.stap-inhoud p { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+.stap-inhoud .stap-note { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 6px; font-style: italic; }
+
 /* ── OVER ONS ── */
 #over { background: var(--donker); color: white; position: relative; overflow: hidden; }
 #over::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--geel); }
@@ -201,6 +217,7 @@ footer a { color:var(--geel); }
 <nav>
   <div class="nav-logo">Dump<span>service</span></div>
   <div class="nav-links">
+      <a href="#hoe">Hoe werkt het</a>
     <a href="#over">Over ons</a>
     <a href="#prijzen">Prijzen</a>
     <a href="#werkgebied">Werkgebied</a>
@@ -212,6 +229,7 @@ footer a { color:var(--geel); }
   </button>
 </nav>
 <div class="nav-mobile-menu" id="mobile-menu">
+  <a href="#hoe" onclick="sluitMenu()">Hoe werkt het</a>
   <a href="#over" onclick="sluitMenu()">Over ons</a>
   <a href="#prijzen" onclick="sluitMenu()">Prijzen</a>
   <a href="#werkgebied" onclick="sluitMenu()">Werkgebied</a>
@@ -220,7 +238,6 @@ footer a { color:var(--geel); }
 </div>
 
 <section id="home">
-  <div class="hero-badge">🚛 DUMPSERVICE ZUID-LIMBURG</div>
   <h1>Afval<span>ophaal</span>service</h1>
   <p>Schrijf je in — wij nemen contact op zodra we een ophaalmoment kunnen inplannen in jouw regio.</p>
   <div class="hero-btns">
@@ -240,22 +257,14 @@ footer a { color:var(--geel); }
   <div class="stat reveal delay-4"><div class="stat-num">Zaterdag</div><div class="stat-label">Ophaaldag</div></div>
 </div>
 
+
+
 <section id="over">
   <div class="over-parallax"></div>
   <div class="container over-inner">
     <div class="over-kop reveal">
       <div class="label">OVER ONS</div>
       <h2>Jouw <span>rommel</span>,<br>onze zorg</h2>
-    </div>
-    <div class="over-foto-wrapper reveal">
-      <img src="foto-sjoerd-daniel.jpg" alt="Sjoerd en Daniël" class="over-foto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="over-foto-placeholder">
-        <span>📸</span>
-        <p>Foto komt hier</p>
-      </div>
-      <div class="over-foto-namen">
-        <span>Sjoerd & Daniël · Dumpservice Zuid-Limburg</span>
-      </div>
     </div>
     <div class="over-tekst reveal">
       <p>Geen gedoe, geen gezeur. Wij komen gewoon langs, laden op en zorgen dat het netjes verwerkt wordt. Jij hoeft alleen maar de deur open te doen.</p>
@@ -291,9 +300,62 @@ footer a { color:var(--geel); }
       <div class="stort-rij"><span>Elektronica / gevaarlijk afval</span><span>Op aanvraag</span></div>
       <p class="stort-note">🪣 Stortkosten worden vooraf betaald op basis van een inschatting van het volume.</p>
     </div>
+    <div class="stort-box reveal" style="margin-top:12px;background:rgba(30,77,43,0.15);border:1px solid #ddd;color:var(--donker);">
+      <h3 style="color:var(--groen);">📋 Overige kosten</h3>
+      <div class="stort-rij" style="border-bottom-color:#eee;"><span>Binnenshuis ophalen / moeilijk bereikbaar</span><span style="color:var(--groen);">Meerprijs op aanvraag</span></div>
+      <div class="stort-rij" style="border-bottom-color:#eee;"><span>Schoonmaak achteraf (bezemschoon)</span><span style="color:var(--groen);">In overleg</span></div>
+      <p class="stort-note" style="color:var(--grijs);">Alles wordt vooraf besproken — geen verrassingen achteraf.</p>
+    </div>
   </div>
 </section>
 
+<section id="hoe">
+  <div class="container">
+    <div class="sectie-kop reveal">
+      <div class="label" style="background:rgba(255,255,255,0.15);color:white;">HOE WERKT HET</div>
+      <h2>Simpel & zonder gedoe</h2>
+      <p>Geen ingewikkeld gedoe — van aanvraag tot opgeruimd in een paar stappen.</p>
+    </div>
+    <div class="stappen">
+      <div class="stap reveal delay-1">
+        <div class="stap-nummer">01</div>
+        <div class="stap-inhoud">
+          <h3>Dien een aanvraag in</h3>
+          <p>Vul het formulier in met je adres, volume en soort afval. Duurt 2 minuten.</p>
+        </div>
+      </div>
+      <div class="stap reveal delay-2">
+        <div class="stap-nummer">02</div>
+        <div class="stap-inhoud">
+          <h3>Wij nemen contact op</h3>
+          <p>We bellen of appen je zo snel mogelijk. Samen plannen we een ophaaldag die past.</p>
+        </div>
+      </div>
+      <div class="stap reveal delay-3">
+        <div class="stap-nummer">03</div>
+        <div class="stap-inhoud">
+          <h3>Afval buiten of binnen — jij kiest</h3>
+          <p>Zet je spullen buiten klaar, of geef door dat we binnenshuis moeten werken. We komen er altijd uit.</p>
+          <div class="stap-note">Binnenshuis ophalen of moeilijk bereikbaar? Geef dit door — afhankelijk van de situatie kan er een kleine meerprijs van toepassing zijn.</div>
+        </div>
+      </div>
+      <div class="stap reveal delay-4">
+        <div class="stap-nummer">04</div>
+        <div class="stap-inhoud">
+          <h3>Wij laden in, jij doet niks</h3>
+          <p>We laden alles in, rijden weg en verwerken het netjes bij erkende verwerkers in de regio.</p>
+        </div>
+      </div>
+      <div class="stap reveal">
+        <div class="stap-nummer">05</div>
+        <div class="stap-inhoud">
+          <h3>Optioneel: schoonmaak achteraf</h3>
+          <p>Na het ophalen kunnen we ook de ruimte bezemschoon achterlaten. Bespreekbaar in overleg.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="werkgebied">
   <div class="container">
     <div class="sectie-kop reveal"><div class="label">WERKGEBIED</div><h2>Regio Zuid-Limburg</h2><p>Wij rijden door heel Zuid-Limburg.</p></div>
@@ -319,6 +381,9 @@ footer a { color:var(--geel); }
       <div class="faq-item reveal delay-4"><button class="faq-vraag">Wat nemen jullie NIET mee? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Geen asbest, chemisch afval (verf, olie, accu's), gasflessen of kadavers.</div></div>
       <div class="faq-item reveal"><button class="faq-vraag">Hoe worden de stortkosten berekend? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Stortkosten zijn afhankelijk van het soort afval: grofvuil €35/m³, hout €20/m³, bouwafval €100/m³. We bespreken dit vooraf zodat je niet voor verrassingen staat.</div></div>
       <div class="faq-item reveal"><button class="faq-vraag">Hoe betaal ik? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Betaling kan contant of via betaalverzoek (Tikkie / bank). Het servicetarief en de geschatte stortkosten worden vooraf afgesproken.</div></div>
+      <div class="faq-item reveal"><button class="faq-vraag">Kunnen jullie ook binnenshuis ophalen? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Ja, dat kan. Geef dit vooraf door zodat we er rekening mee kunnen houden. Afhankelijk van de situatie (trap, hoeveelheid, bereikbaarheid) kan er een kleine meerprijs van toepassing zijn. We bespreken dit altijd vooraf.</div></div>
+      <div class="faq-item reveal"><button class="faq-vraag">Is schoonmaak achteraf mogelijk? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">Ja, we kunnen de ruimte bezemschoon achterlaten na het ophalen. Dit is bespreekbaar in overleg en wordt apart geprijsd op basis van de situatie.</div></div>
+      <div class="faq-item reveal"><button class="faq-vraag">Wanneer horen we iets terug na onze aanvraag? <span class="faq-pijl">▾</span></button><div class="faq-antwoord">We nemen zo snel mogelijk contact op, doorgaans binnen 1-2 werkdagen. We plannen samen een ophaalmoment dat past.</div></div>
     </div>
   </div>
 </section>
